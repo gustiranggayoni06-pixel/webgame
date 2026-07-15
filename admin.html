@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranzz Store — Admin Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background-color: #080c14; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="antialiased min-h-screen py-8 px-4">
+
+    <!-- FORM LOGIN VERIFIKASI -->
+    <div id="auth-panel" class="max-w-sm mx-auto bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-2xl mt-12">
+        <div class="text-center mb-5">
+            <span class="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest block">ADMIN ACCESS</span>
+            <h2 class="text-lg font-extrabold text-white mt-1">Sistem Keamanan Toko</h2>
+        </div>
+        <div class="space-y-4">
+            <input type="password" id="admin-pin" placeholder="Masukkan PIN Admin (Bawaan: 1221)" class="w-full bg-slate-900 text-white text-center text-xs py-3 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500">
+            <button onclick="masukDashboard()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 rounded-xl transition">Akses Panel</button>
+        </div>
+    </div>
+
+    <!-- UTAMA: ADMIN CONTROL CENTER -->
+    <div id="main-panel" class="max-w-2xl mx-auto bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-2xl hidden">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-5 mb-6">
+            <div>
+                <h1 class="text-lg font-extrabold text-white uppercase tracking-wider">Ranzz Store Management</h1>
+                <p class="text-[11px] text-slate-400">Atur database produk secara real-time di Cloud Database Supabase.</p>
+            </div>
+            <div class="flex gap-2">
+                <a href="index.html" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] font-bold transition">Lihat Toko</a>
+                <button onclick="keluarSesi()" class="px-3 py-2 bg-red-950/40 border border-red-800 hover:bg-red-900 rounded-lg text-[10px] font-bold text-red-400 transition">Log Out</button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD ANALITIK -->
+        <section class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-8">
+            <div class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
+                <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Total Produk</span>
+                <span id="stat-total" class="text-lg font-extrabold text-white mt-1 block">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
+                <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Aset Ready</span>
+                <span id="stat-ready" class="text-lg font-extrabold text-emerald-400 mt-1 block">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
+                <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Terjual / Sold</span>
+                <span id="stat-sold" class="text-lg font-extrabold text-red-400 mt-1 block">0</span>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
+                <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Estimasi Omzet</span>
+                <span id="stat-revenue" class="text-lg font-extrabold text-cyan-400 mt-1 block">Rp 0</span>
+            </div>
+        </section>
+
+        <!-- FORM INPUT PRODUK -->
+        <section class="bg-slate-900/40 border border-slate-800/80 p-5 rounded-xl mb-8">
+            <h3 id="form-header" class="text-xs font-bold text-white tracking-widest uppercase border-l-2 border-cyan-400 pl-2 mb-4">Tambah Akun Baru</h3>
+            <input type="hidden" id="item-uuid">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Nama Kategori Game:</label>
+                    <input type="text" id="p-game" placeholder="Contoh: ML, FF, PUBG" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Nama Judul Akun:</label>
+                    <input type="text" id="p-nama" placeholder="Contoh: Mobile Legends Sultan S25" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Spesifikasi Singkat:</label>
+                    <input type="text" id="p-spek" placeholder="Contoh: Skin Granger Collector, WR Aman 60%" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Nominal Harga:</label>
+                    <input type="number" id="p-harga" placeholder="Contoh: 350000" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Status Ketersediaan:</label>
+                    <select id="p-status" class="w-full bg-slate-900 text-slate-300 text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
+                        <option value="Ready">Ready (Tersedia)</option>
+                        <option value="Sold Out">Sold Out (Terjual)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Nickname Akun:</label>
+                    <input type="text" id="p-nick" placeholder="Contoh: RanzzSlayer" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Total Jumlah Skin:</label>
+                    <input type="text" id="p-skin" placeholder="Contoh: 145 Skins" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Win Rate / Level Akun:</label>
+                    <input type="text" id="p-wr" placeholder="Contoh: WR 65.2% / Lv 72" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Data Login Via:</label>
+                    <input type="text" id="p-login" placeholder="Contoh: Login Moonton Lengkap" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Link Alamat Gambar / Sampul:</label>
+                    <input type="url" id="p-gambar" placeholder="Masukkan link gambar (https://...)" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
+                </div>
+            </div>
+
+            <div class="mt-5 flex gap-2">
+                <button onclick="simpanItem()" id="btn-submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition">Simpan Akun</button>
+                <button onclick="bersihkanForm()" id="btn-cancel" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-lg transition hidden">Batal</button>
+            </div>
+        </section>
+
+        <!-- DAFTAR KATALOG -->
+        <section>
+            <h3 class="text-xs font-bold text-white tracking-widest uppercase border-l-2 border-cyan-400 pl-2 mb-4">Data Akun Terdaftar</h3>
+            <div class="space-y-3" id="admin-list-container">
+                <!-- Dinamis via JS -->
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const PIN_ADMIN_SECURE = '1221'; 
+
+        // === CONFIG SUPABASE ===
+        const SUPABASE_URL = 'https://edhonplddyebaeejwaco.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'Sb_publishable_sY9PVeH2lMnM47f9AUvgAA_roqfEeHv';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let dbAdmin = [];
+
+        function masukDashboard() {
+            const input = document.getElementById('admin-pin').value;
+            if (input === PIN_ADMIN_SECURE) {
+                sessionStorage.setItem('authorized_session', 'true');
+                aktifkanPanel();
+            } else {
+                alert('Akses Ditolak! Kode PIN tidak cocok.');
+            }
+        }
+
+        function aktifkanPanel() {
+            document.getElementById('auth-panel').classList.add('hidden');
+            document.getElementById('main-panel').classList.remove('hidden');
+            muatProdukAdmin();
+        }
+
+        function keluarSesi() {
+            sessionStorage.removeItem('authorized_session');
+            document.getElementById('auth-panel').classList.remove('hidden');
+            document.getElementById('main-panel').classList.add('hidden');
+            document.getElementById('admin-pin').value = '';
+        }
+
+        // AMBIL DATA REAL-TIME DARI SUPABASE
+        async function muatProdukAdmin() {
+            try {
+                const { data, error } = await supabaseClient.from('products').select('*');
+                if (error) throw error;
+                dbAdmin = data;
+
+                const container = document.getElementById('admin-list-container');
+                container.innerHTML = '';
+
+                // Hitung Statistik
+                let total = dbAdmin.length;
+                let ready = dbAdmin.filter(p => p.status === 'Ready').length;
+                let sold = dbAdmin.filter(p => p.status === 'Sold Out').length;
+                let revenue = dbAdmin.filter(p => p.status === 'Sold Out').reduce((acc, p) => acc + parseInt(p.harga), 0);
+
+                document.getElementById('stat-total').innerText = total;
+                document.getElementById('stat-ready').innerText = ready;
+                document.getElementById('stat-sold').innerText = sold;
+                document.getElementById('stat-revenue').innerText = 'Rp ' + revenue.toLocaleString('id-ID');
+
+                if (dbAdmin.length === 0) {
+                    container.innerHTML = `<p class="text-xs text-slate-500 text-center py-5">Belum ada katalog didaftarkan.</p>`;
+                    return;
+                }
+
+                dbAdmin.forEach((p) => {
+                    const item = document.createElement('div');
+                    item.className = "flex items-center justify-between gap-3 bg-slate-900 border border-slate-800 p-3 rounded-xl";
+
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <img src="${p.gambar}" class="w-10 h-10 rounded-lg object-cover shrink-0 bg-slate-950">
+                            <div class="overflow-hidden">
+                                <h4 class="text-xs font-bold text-white truncate">${p.nama}</h4>
+                                <p class="text-[9px] text-slate-500 truncate mt-0.5">${p.spek}</p>
+                                <span class="text-[9px] text-cyan-400 font-bold block mt-0.5">Rp ${parseInt(p.harga).toLocaleString('id-ID')} | [${p.game}] | Status: ${p.status}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-1.5 shrink-0">
+                            <button onclick="pemicuEdit('${p.id}')" class="p-2 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-400 hover:text-slate-950 rounded-lg transition">
+                                ✏️
+                            </button>
+                            <button onclick="hapusAkun('${p.id}', '${p.nama}')" class="p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg transition">
+                                🗑️
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            } catch (err) {
+                console.error("Kesalahan sinkronisasi database: ", err.message);
+            }
+        }
+
+        // SIMPAN / UPDATE KE SUPABASE
+        async function simpanItem() {
+            const uuid = document.getElementById('item-uuid').value;
+            const game = document.getElementById('p-game').value.trim().toUpperCase();
+            const nama = document.getElementById('p-nama').value.trim();
+            const spek = document.getElementById('p-spek').value.trim();
+            const harga = parseInt(document.getElementById('p-harga').value);
+            const status = document.getElementById('p-status').value;
+            const gambar = document.getElementById('p-gambar').value.trim();
+
+            const nick = document.getElementById('p-nick').value.trim();
+            const skin = document.getElementById('p-skin').value.trim();
+            const wr = document.getElementById('p-wr').value.trim();
+            const login = document.getElementById('p-login').value.trim();
+
+            if (!game || !nama || !spek || isNaN(harga) || !gambar) {
+                alert('Harap lengkapi semua isian kolom form utama!');
+                return;
+            }
+
+            const payload = { game, nama, spek, harga, status, gambar, nick, skin, wr, login };
+
+            try {
+                if (uuid) {
+                    const { error } = await supabaseClient.from('products').update(payload).eq('id', uuid);
+                    if (error) throw error;
+                    alert('Detail akun berhasil diperbarui!');
+                } else {
+                    const { error } = await supabaseClient.from('products').insert([payload]);
+                    if (error) throw error;
+                    alert('Katalog akun baru telah didaftarkan di Supabase!');
+                }
+                bersihkanForm();
+                muatProdukAdmin();
+            } catch (err) {
+                alert('Gagal menyimpan data: ' + err.message);
+            }
+        }
+
+        function pemicuEdit(id) {
+            const p = dbAdmin.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('item-uuid').value = p.id;
+            document.getElementById('p-game').value = p.game;
+            document.getElementById('p-nama').value = p.nama;
+            document.getElementById('p-spek').value = p.spek;
+            document.getElementById('p-harga').value = p.harga;
+            document.getElementById('p-status').value = p.status;
+            document.getElementById('p-gambar').value = p.gambar;
+
+            document.getElementById('p-nick').value = p.nick || '';
+            document.getElementById('p-skin').value = p.skin || '';
+            document.getElementById('p-wr').value = p.wr || '';
+            document.getElementById('p-login').value = p.login || '';
+
+            document.getElementById('form-header').innerText = "Edit Detail Akun";
+            document.getElementById('btn-submit').innerText = "Simpan Perubahan";
+            document.getElementById('btn-cancel').classList.remove('hidden');
+        }
+
+        async function deleteDatabaseData(id, table) {
+            try {
+                const { error } = await supabaseClient.from(table).delete().eq('id', id);
+                if (error) throw error;
+            } catch (err) {
+                throw err;
+            }
+        }
+
+        async function hapusAkun(id, nama) {
+            if (confirm(`Yakin ingin menghapus item "${nama}" dari database Cloud?`)) {
+                try {
+                    await deleteDatabaseData(id, 'products');
+                    muatProdukAdmin();
+                } catch (err) {
+                    alert('Gagal menghapus: ' + err.message);
+                }
+            }
+        }
+
+        function bersihkanForm() {
+            document.getElementById('item-uuid').value = '';
+            document.getElementById('p-game').value = '';
+            document.getElementById('p-nama').value = '';
+            document.getElementById('p-spek').value = '';
+            document.getElementById('p-harga').value = '';
+            document.getElementById('p-status').value = 'Ready';
+            document.getElementById('p-gambar').value = '';
+
+            document.getElementById('p-nick').value = '';
+            document.getElementById('p-skin').value = '';
+            document.getElementById('p-wr').value = '';
+            document.getElementById('p-login').value = '';
+
+            document.getElementById('form-header').innerText = "Tambah Akun Baru";
+            document.getElementById('btn-submit').innerText = "Simpan Akun";
+            document.getElementById('btn-cancel').classList.add('hidden');
+        }
+
+        window.onload = () => {
+            if (sessionStorage.getItem('authorized_session') === 'true') {
+                aktifkanPanel();
+            }
+        }
+    </script>
+</body>
+</html>
