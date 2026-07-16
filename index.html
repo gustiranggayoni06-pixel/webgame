@@ -24,112 +24,11 @@
 </head>
 <body class="antialiased min-h-screen pb-20">
 
-    <div class="max-w-md mx-auto bg-[#0d1527] min-h-screen border-x border-slate-900 shadow-2xl relative flex flex-col">
-        
-        <!-- HEADER -->
-        <header class="sticky top-0 bg-[#0d1527]/95 backdrop-blur-md border-b border-slate-800/60 z-40 px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center font-bold text-slate-950 text-base italic shadow-lg shadow-indigo-500/10">
-                    RS
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-sm text-white tracking-wide">Ranzz Store</h1>
-                    <span class="text-[9px] text-cyan-400 font-bold tracking-widest block">SECURE GAME STATION</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- BANNER -->
-        <section class="p-4">
-            <div class="relative rounded-2xl overflow-hidden h-36 bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-900 border border-slate-800 p-5 flex flex-col justify-center">
-                <span class="text-[8px] font-bold text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded-md w-max mb-2 uppercase tracking-widest">SISTEM INTEGRASI CLOUD</span>
-                <h2 class="font-extrabold text-lg text-white">Beli Akun Game Instan</h2>
-                <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">Cari, pilih, dan bayar otomatis. Akun terjamin aman, legal, dan langsung dikirimkan oleh sistem kami.</p>
-            </div>
-        </section>
-
-        <!-- SEARCH, FILTER & SORTIR -->
-        <section class="px-4 space-y-3">
-            <div class="relative">
-                <input type="text" id="search-input" oninput="jalankanFilter()" placeholder="Cari nama akun atau spesifikasi..." class="w-full bg-slate-900 text-slate-200 text-xs pl-10 pr-4 py-3.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500 transition-all">
-                <div class="absolute left-3.5 top-4 text-slate-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center gap-2">
-                <div class="flex gap-1.5 overflow-x-auto scrollbar-hide py-1 shrink-0 max-w-[70%]" id="kategori-container"></div>
-                <select id="sort-select" onchange="jalankanFilter()" class="bg-slate-900 text-slate-400 text-[10px] font-bold px-2 py-2 rounded-lg border border-slate-800 focus:outline-none">
-                    <option value="terbaru">Terbaru</option>
-                    <option value="murah">Harga Terendah</option>
-                    <option value="mahal">Harga Tertinggi</option>
-                </select>
-            </div>
-        </section>
-
-        <!-- KATALOG PRODUK -->
-        <main class="px-4 py-4 flex-grow">
-            <div id="loading-spinner" class="text-center py-12">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500 mx-auto"></div>
-                <p class="text-xs text-slate-500 mt-3">Sinkronisasi database...</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3.5 hidden" id="katalog-grid"></div>
-            <div id="katalog-kosong" class="hidden text-center py-16 text-slate-500 text-xs">
-                Tidak ada akun game yang cocok dengan pencarian Anda.
-            </div>
-        </main>
-
-        <!-- LACAK PESANAN -->
-        <section class="px-4 py-6 border-t border-slate-800/80 bg-slate-950/20">
-            <h3 class="text-xs font-bold text-white tracking-wider mb-2 uppercase">Lacak Status Pesanan</h3>
-            <div class="flex gap-2">
-                <input type="text" id="order-id-track" placeholder="Masukkan ID Pesanan (RNZ-xxxx)" class="flex-grow bg-slate-900 text-slate-300 text-xs px-3.5 py-3 rounded-xl border border-slate-800 focus:outline-none">
-                <button onclick="lacakPesanan()" class="px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition">Lacak</button>
-            </div>
-            <div id="hasil-lacak" class="hidden mt-3 p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs"></div>
-        </section>
-
-        <!-- ULASAN INTERAKTIF -->
-        <section class="px-4 py-6 border-t border-slate-800/80">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xs font-bold text-white tracking-wider uppercase">Ulasan Pembeli</h3>
-                <button onclick="toggleFormUlasan()" class="text-[10px] text-cyan-400 font-bold hover:underline">Tulis Ulasan</button>
-            </div>
-
-            <div id="form-ulasan-container" class="hidden bg-slate-900 p-4 rounded-xl border border-slate-800 mb-4 space-y-3">
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="rev-nama" placeholder="Nama Anda" class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-xs text-white focus:outline-none">
-                    <select id="rev-bintang" class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-xs text-slate-400 focus:outline-none">
-                        <option value="5">⭐⭐⭐⭐⭐ (5)</option>
-                        <option value="4">⭐⭐⭐⭐ (4)</option>
-                        <option value="3">⭐⭐⭐ (3)</option>
-                    </select>
-                </div>
-                <textarea id="rev-pesan" placeholder="Tulis komentar ulasan Anda disini..." rows="2" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-xs text-white focus:outline-none"></textarea>
-                <button onclick="kirimUlasan()" class="w-full py-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-xs rounded-lg transition">Kirim Ulasan</button>
-            </div>
-
-            <div class="space-y-3" id="ulasan-list"></div>
-        </section>
-
-        <!-- FOOTER -->
-        <footer class="mt-auto border-t border-slate-800 bg-slate-950/60 p-6 text-center">
-            <div class="font-extrabold text-xs tracking-widest text-slate-400">RANZZ STORE</div>
-            <p class="text-[9px] text-slate-600 mt-1">Platform Katalog & Serah Terima Akun Aman Mandiri.</p>
-            <div class="mt-3.5 inline-flex items-center gap-1 px-2.5 py-1 bg-[#0d1527] border border-slate-800 rounded-lg text-[8px] text-slate-500 font-bold tracking-wider">
-                🛡️ DATABASE SYSTEM: <span class="text-cyan-400">SUPABASE SECURE</span>
-            </div>
-        </footer>
-
-    </div>
-
-    <!-- DETAIL & CHECKOUT DRAWER -->
+        <!-- DETAIL & CHECKOUT DRAWER -->
     <div id="checkout-drawer" class="fixed inset-0 bg-black/80 z-50 flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="w-full max-w-md bg-[#0d1527] rounded-t-2xl border-t border-slate-800 p-6 transform translate-y-full transition-transform duration-300 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div class="w-full max-w-md bg-[#0d1527] rounded-t-2xl border-t border-slate-800 p-6 transform translate-y-full transition-transform duration-300 shadow-2xl overflow-y-auto max-h-[90vh] space-y-4">
             
+            <!-- Header Modal -->
             <div class="flex justify-between items-center mb-4">
                 <span class="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest">Detail & Pembelian</span>
                 <button onclick="tutupDrawer()" class="p-1.5 bg-slate-900 rounded-lg text-slate-400 hover:text-white">
@@ -139,79 +38,52 @@
                 </button>
             </div>
 
+            <!-- Detail Produk -->
             <div class="relative w-full mb-4">
                 <div class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 group">
-                    <img id="d-gambar-utama" src="" class="w-full h-full object-cover transition-all duration-350">
-                    
-                    <button id="btn-prev-foto" onclick="geserFoto(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-slate-950/80 hover:bg-slate-900 text-white rounded-xl p-2 border border-slate-800/80 transition hidden flex items-center justify-center shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-                    
-                    <button id="btn-next-foto" onclick="geserFoto(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-950/80 hover:bg-slate-900 text-white rounded-xl p-2 border border-slate-800/80 transition hidden flex items-center justify-center shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+                    <img id="d-gambar-utama" src="" class="w-full h-full object-cover">
                 </div>
-                <div id="d-thumbnail-container" class="flex gap-2 mt-2 overflow-x-auto scrollbar-hide py-1"></div>
             </div>
-
             <div class="flex flex-col mb-4">
                 <h4 id="d-nama" class="font-bold text-sm text-white truncate">Nama Akun</h4>
                 <p id="d-spek" class="text-[10px] text-slate-400 mt-0.5 truncate">Spesifikasi Utama</p>
                 <span id="d-harga" class="text-sm font-extrabold text-cyan-400 mt-1">Rp 0</span>
             </div>
 
-            <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800/80 mb-5 space-y-2 text-[10px]">
-                <div class="flex justify-between border-b border-slate-900 pb-1.5">
-                    <span class="text-slate-500">Nickname Akun</span>
-                    <span id="d-nick" class="font-bold text-slate-300">-</span>
-                </div>
-                <div class="flex justify-between border-b border-slate-900 pb-1.5">
-                    <span class="text-slate-500">Jumlah Skin</span>
-                    <span id="d-skin" class="font-bold text-slate-300">-</span>
-                </div>
-                <div class="flex justify-between border-b border-slate-900 pb-1.5">
-                    <span class="text-slate-500">Kredensial Login</span>
-                    <span id="d-login" class="font-bold text-slate-300">-</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-500">Win Rate / Level</span>
-                    <span id="d-wr" class="font-bold text-slate-300">-</span>
+            <!-- INPUT NOMOR WHATSAPP -->
+            <div class="mb-5">
+                <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase">Nomor WhatsApp Aktif:</label>
+                <input type="number" id="buyer-phone" placeholder="Contoh: 08123456789" class="w-full bg-slate-900 text-slate-100 text-xs px-3.5 py-3.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <!-- OPSI PEMBAYARAN -->
+            <div class="mb-5">
+                <h4 class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Pilih Metode Pembayaran:</h4>
+                <div class="space-y-2">
+                    <label id="label-qris" onclick="pilihMetode('qris')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-indigo-500 cursor-pointer transition-all">
+                        <input type="radio" name="payment" value="qris" checked class="hidden">
+                        <span class="ml-3 text-xs text-white font-bold">QRIS (Otomatis)</span>
+                    </label>
+                    <label id="label-dana" onclick="pilihMetode('dana')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition-all">
+                        <input type="radio" name="payment" value="dana" class="hidden">
+                        <div class="ml-3"><p class="text-xs text-white font-bold">DANA</p></div>
+                    </label>
+                    <label id="label-gopay" onclick="pilihMetode('gopay')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition-all">
+                        <input type="radio" name="payment" value="gopay" class="hidden">
+                        <div class="ml-3"><p class="text-xs text-white font-bold">GoPay</p></div>
+                    </label>
                 </div>
             </div>
 
-                <!-- OPSI PEMBAYARAN -->
-<div class="mb-5">
-    <h4 class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Pilih Metode Pembayaran:</h4>
-    <div class="space-y-2">
-        <!-- QRIS -->
-        <label id="label-qris" onclick="pilihMetode('qris')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-indigo-500 cursor-pointer transition-all">
-            <input type="radio" name="payment" value="qris" checked class="hidden">
-            <span class="ml-3 text-xs text-white font-bold">QRIS (Otomatis)</span>
-        </label>
-        
-        <!-- DANA -->
-        <label id="label-dana" onclick="pilihMetode('dana')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition-all">
-            <input type="radio" name="payment" value="dana" class="hidden">
-            <div class="ml-3">
-                <p class="text-xs text-white font-bold">DANA</p>
-                <p class="text-[9px] text-slate-400">Ranzz — 081218002777</p>
+            <!-- TOMBOL BAYAR SEKARANG -->
+            <div class="mt-2 pb-6">
+                <button onclick="prosesCheckout()" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 hover:brightness-110 text-slate-950 font-extrabold text-xs py-4 rounded-xl transition shadow-lg shadow-indigo-500/10">
+                    BAYAR SEKARANG
+                </button>
             </div>
-        </label>
-
-        <!-- GOPAY -->
-        <label id="label-gopay" onclick="pilihMetode('gopay')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition-all">
-            <input type="radio" name="payment" value="gopay" class="hidden">
-            <div class="ml-3">
-                <p class="text-xs text-white font-bold">GoPay</p>
-                <p class="text-[9px] text-slate-400">DAVID RIVALDI RAVIAN — 085718522934</p>
-            </div>
-        </label>
-    </div>
-</div>
+            
+        </div> <!-- PENUTUP MODAL -->
+    </div> <!-- PENUTUP OVERLAY -->
 
     <!-- ENGINE JAVASCRIPT & SUPABASE -->
     <script>
