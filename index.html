@@ -183,17 +183,36 @@
                 </div>
             </div>
 
+                        <!-- OPSI PEMBAYARAN -->
             <div class="mb-5">
-                <label for="buyer-phone" class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase">Nomor WhatsApp Aktif:</label>
-                <input type="tel" id="buyer-phone" placeholder="Contoh: 08123456789" class="w-full bg-slate-900 text-slate-100 text-xs px-3.5 py-3.5 rounded-xl border border-slate-800 focus:outline-none focus:border-[#4f46e5]">
-                <span class="text-[9px] text-slate-500 block mt-1.5 leading-normal">Kredensial login akun akan dikirimkan oleh admin secara aman langsung ke nomor WhatsApp ini.</span>
+                <h4 class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Pilih Metode Pembayaran:</h4>
+                <div class="space-y-2">
+                    <!-- QRIS (Payment Gateway) -->
+                    <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-indigo-500 cursor-pointer">
+                        <input type="radio" name="payment" value="qris" checked class="accent-indigo-500">
+                        <span class="ml-3 text-xs text-white font-bold">QRIS (Otomatis)</span>
+                    </label>
+                    
+                    <!-- DANA -->
+                    <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer">
+                        <input type="radio" name="payment" value="dana" class="accent-indigo-500">
+                        <div class="ml-3">
+                            <p class="text-xs text-white font-bold">DANA</p>
+                            <p class="text-[9px] text-slate-400">Ranzz — 081218002777</p>
+                        </div>
+                    </label>
+
+                    <!-- GOPAY -->
+                    <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer">
+                        <input type="radio" name="payment" value="gopay" class="accent-indigo-500">
+                        <div class="ml-3">
+                            <p class="text-xs text-white font-bold">GoPay</p>
+                            <p class="text-[9px] text-slate-400">DAVID RIVALDI RAVIAN — 085718522934</p>
+                        </div>
+                    </label>
+                </div>
             </div>
 
-            <button onclick="prosesCheckout()" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 hover:brightness-110 text-slate-950 font-extrabold text-xs py-4 rounded-xl transition shadow-lg shadow-indigo-500/10">
-                BAYAR INSTAN (QRIS)
-            </button>
-        </div>
-    </div>
 
     <!-- ENGINE JAVASCRIPT & SUPABASE -->
     <script>
@@ -420,50 +439,48 @@
             }, 300);
         }
 
-        async function prosesCheckout() {
+                async function prosesCheckout() {
             const waBuyer = document.getElementById('buyer-phone').value.trim();
+            const metode = document.querySelector('input[name="payment"]:checked').value;
+            
             if (!waBuyer) {
-                alert('Silakan isi nomor WhatsApp Anda agar pengiriman data login akun tidak tertunda!');
-                return;
-            }
-
-            if (currentItem.status !== 'Ready') {
-                alert('Akun ini sudah tidak tersedia.');
+                alert('Silakan isi nomor WhatsApp Anda!');
                 return;
             }
 
             const d = new Date();
             const orderId = `RNZ-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-            const textWA = `*KLAIM PESANAN RANZZ STORE*\n\n` +
-                           `Halo Admin Ranzz Store,\nSaya baru saja menyelesaikan pembayaran instan QRIS.\n\n` +
-                           `📦 *Nama Akun:* ${currentItem.nama}\n` +
-                           `💵 *Harga:* Rp ${parseInt(currentItem.harga).toLocaleString('id-ID')}\n` +
-                           `🔖 *ID Transaksi:* ${orderId}\n` +
-                           `📞 *No. WA Pembeli:* ${waBuyer}\n\n` +
-                           `Mohon divalidasi di Database Supabase Anda dan kirim data akun game-nya ya min.`;
+            // Logika Pesan WA
+            let textWA = `*KLAIM PESANAN ${metode.toUpperCase()}*\n\n` +
+                         `Halo Admin Ranzz Store, saya melakukan pembayaran via ${metode.toUpperCase()}.\n\n` +
+                         `📦 *Akun:* ${currentItem.nama}\n` +
+                         `🔖 *ID:* ${orderId}\n` +
+                         `📞 *WA:* ${waBuyer}\n\n` +
+                         `Mohon diproses min!`;
 
-            const waRedirectLink = `https://wa.me/${WA_ADMIN_TAMPILAN}?text=${encodeURIComponent(textWA)}`;
-            const gatewayDomain = ['p','a','k','a','s','i','r'].join('');
-            const urlPaymentGateway = `https://app.${gatewayDomain}.com/pay/${GATEWAY_SLUG}/${currentItem.harga}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent(waRedirectLink)}`;
-            
             try {
-                const { error } = await supabaseClient.from('orders').insert([
-                    {
-                        order_id: orderId,
-                        nama_akun: currentItem.nama,
-                        harga: currentItem.harga,
-                        status: 'Menunggu Verifikasi Pembayaran',
-                        wa_pembeli: waBuyer
-                    }
-                ]);
+                // Simpan ke Supabase
+                await supabaseClient.from('orders').insert([{
+                    order_id: orderId,
+                    nama_akun: currentItem.nama,
+                    harga: currentItem.harga,
+                    status: 'Menunggu Verifikasi Pembayaran (' + metode.toUpperCase() + ')',
+                    wa_pembeli: waBuyer
+                }]);
 
-                if (error) throw error;
-                window.location.href = urlPaymentGateway;
+                // Jika pilih QRIS, buka link gateway. Jika E-Wallet, langsung ke WA.
+                if (metode === 'qris') {
+                    const gatewayDomain = ['p','a','k','a','s','i','r'].join('');
+                    window.location.href = `https://app.${gatewayDomain}.com/pay/${GATEWAY_SLUG}/${currentItem.harga}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/6283157363740?text=' + encodeURIComponent(textWA))}`;
+                } else {
+                    window.location.href = `https://wa.me/6283157363740?text=${encodeURIComponent(textWA)}`;
+                }
             } catch (err) {
                 alert('Database error: ' + err.message);
             }
         }
+
 
         async function lacakPesanan() {
             const idInput = document.getElementById('order-id-track').value.trim();
