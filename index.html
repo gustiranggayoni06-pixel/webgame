@@ -184,35 +184,42 @@
             </div>
 
                         <!-- OPSI PEMBAYARAN -->
-            <div class="mb-5">
-                <h4 class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Pilih Metode Pembayaran:</h4>
-                <div class="space-y-2">
-                    <!-- QRIS (Payment Gateway) -->
-                    <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-indigo-500 cursor-pointer">
-                        <input type="radio" name="payment" value="qris" checked class="accent-indigo-500">
-                        <span class="ml-3 text-xs text-white font-bold">QRIS (Otomatis)</span>
-                    </label>
-                    
-                    <!-- DANA -->
-                    <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer">
-                        <input type="radio" name="payment" value="dana" class="accent-indigo-500">
-                        <div class="ml-3">
-                            <p class="text-xs text-white font-bold">DANA</p>
-                            <p class="text-[9px] text-slate-400">Ranzz — 081218002777</p>
-                        </div>
-                    </label>
-
-                    <!-- GOPAY -->
-                    <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer">
-                        <input type="radio" name="payment" value="gopay" class="accent-indigo-500">
-                        <div class="ml-3">
-                            <p class="text-xs text-white font-bold">GoPay</p>
-                            <p class="text-[9px] text-slate-400">DAVID RIVALDI RAVIAN — 085718522934</p>
-                        </div>
-                    </label>
-                </div>
+            <!-- OPSI PEMBAYARAN -->
+<div class="mb-5">
+    <h4 class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Pilih Metode Pembayaran:</h4>
+    <div class="space-y-2">
+        <!-- QRIS (Payment Gateway) -->
+        <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-indigo-500 cursor-pointer">
+            <input type="radio" name="payment" value="qris" checked class="accent-indigo-500">
+            <span class="ml-3 text-xs text-white font-bold">QRIS (Otomatis)</span>
+        </label>
+        
+        <!-- DANA -->
+        <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer">
+            <input type="radio" name="payment" value="dana" class="accent-indigo-500">
+            <div class="ml-3">
+                <p class="text-xs text-white font-bold">DANA</p>
+                <p class="text-[9px] text-slate-400">Ranzz — 081218002777</p>
             </div>
+        </label>
 
+        <!-- GOPAY -->
+        <label class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer">
+            <input type="radio" name="payment" value="gopay" class="accent-indigo-500">
+            <div class="ml-3">
+                <p class="text-xs text-white font-bold">GoPay</p>
+                <p class="text-[9px] text-slate-400">DAVID RIVALDI RAVIAN — 085718522934</p>
+            </div>
+        </label>
+    </div>
+</div>
+
+<!-- TOMBOL BAYAR (POSISI TETAP DI BAWAH) -->
+<div class="mt-6 pt-4 border-t border-slate-800">
+    <button onclick="prosesCheckout()" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 hover:brightness-110 text-slate-950 font-extrabold text-xs py-4 rounded-xl transition shadow-lg shadow-indigo-500/10">
+        BAYAR SEKARANG
+    </button>
+</div>
 
     <!-- ENGINE JAVASCRIPT & SUPABASE -->
     <script>
@@ -598,4 +605,4 @@ s0.parentNode.insertBefore(s1,s0);
 </script>
 <!--End of Tawk.to Script-->
 </body>
-        </html>
+    </html>
