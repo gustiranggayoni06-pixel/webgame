@@ -439,49 +439,55 @@
             }, 300);
         }
 
-                async function prosesCheckout() {
-            const waBuyer = document.getElementById('buyer-phone').value.trim();
-            const metode = document.querySelector('input[name="payment"]:checked').value;
-            
-            if (!waBuyer) {
-                alert('Silakan isi nomor WhatsApp Anda!');
-                return;
-            }
+                // GANTI FUNGSI PROSES CHECKOUT DENGAN INI
+async function prosesCheckout() {
+    const waBuyer = document.getElementById('buyer-phone').value.trim();
+    
+    // Memastikan elemen radio ditemukan
+    const radioMetode = document.querySelector('input[name="payment"]:checked');
+    if (!radioMetode) {
+        alert('Silakan pilih metode pembayaran terlebih dahulu!');
+        return;
+    }
+    const metode = radioMetode.value;
+    
+    if (!waBuyer) {
+        alert('Silakan isi nomor WhatsApp Anda!');
+        return;
+    }
 
-            const d = new Date();
-            const orderId = `RNZ-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const d = new Date();
+    const orderId = `RNZ-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-            // Logika Pesan WA
-            let textWA = `*KLAIM PESANAN ${metode.toUpperCase()}*\n\n` +
-                         `Halo Admin Ranzz Store, saya melakukan pembayaran via ${metode.toUpperCase()}.\n\n` +
-                         `📦 *Akun:* ${currentItem.nama}\n` +
-                         `🔖 *ID:* ${orderId}\n` +
-                         `📞 *WA:* ${waBuyer}\n\n` +
-                         `Mohon diproses min!`;
+    let textWA = `*KLAIM PESANAN ${metode.toUpperCase()}*\n\n` +
+                 `Halo Admin Ranzz Store, saya melakukan pembayaran via ${metode.toUpperCase()}.\n\n` +
+                 `📦 *Akun:* ${currentItem.nama}\n` +
+                 `🔖 *ID:* ${orderId}\n` +
+                 `📞 *WA:* ${waBuyer}\n\n` +
+                 `Mohon diproses min!`;
 
-            try {
-                // Simpan ke Supabase
-                await supabaseClient.from('orders').insert([{
-                    order_id: orderId,
-                    nama_akun: currentItem.nama,
-                    harga: currentItem.harga,
-                    status: 'Menunggu Verifikasi Pembayaran (' + metode.toUpperCase() + ')',
-                    wa_pembeli: waBuyer
-                }]);
+    try {
+        // Simpan ke Supabase
+        await supabaseClient.from('orders').insert([{
+            order_id: orderId,
+            nama_akun: currentItem.nama,
+            harga: currentItem.harga,
+            status: 'Menunggu Verifikasi Pembayaran (' + metode.toUpperCase() + ')',
+            wa_pembeli: waBuyer
+        }]);
 
-                // Jika pilih QRIS, buka link gateway. Jika E-Wallet, langsung ke WA.
-                if (metode === 'qris') {
-                    const gatewayDomain = ['p','a','k','a','s','i','r'].join('');
-                    window.location.href = `https://app.${gatewayDomain}.com/pay/${GATEWAY_SLUG}/${currentItem.harga}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/6283157363740?text=' + encodeURIComponent(textWA))}`;
-                } else {
-                    window.location.href = `https://wa.me/6283157363740?text=${encodeURIComponent(textWA)}`;
-                }
-            } catch (err) {
-                alert('Database error: ' + err.message);
-            }
+        if (metode === 'qris') {
+            const gatewayDomain = ['p','a','k','a','s','i','r'].join('');
+            window.location.href = `https://app.${gatewayDomain}.com/pay/${GATEWAY_SLUG}/${currentItem.harga}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/6283157363740?text=' + encodeURIComponent(textWA))}`;
+        } else {
+            // Untuk E-Wallet (DANA/GOPAY), arahkan ke WA
+            window.location.href = `https://wa.me/6283157363740?text=${encodeURIComponent(textWA)}`;
         }
-
-
+    } catch (err) {
+        alert('Database error: ' + err.message);
+    }
+}
+      
         async function lacakPesanan() {
             const idInput = document.getElementById('order-id-track').value.trim();
             const output = document.getElementById('hasil-lacak');
@@ -592,4 +598,4 @@ s0.parentNode.insertBefore(s1,s0);
 </script>
 <!--End of Tawk.to Script-->
 </body>
-    </html>
+        </html>
