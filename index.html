@@ -37,7 +37,6 @@
                     <span class="text-[9px] text-cyan-400 font-bold tracking-widest block">SECURE GAME STATION</span>
                 </div>
             </div>
-            <!-- UKURAN IKON DIPERBAIKI MENJADI h-5 w-5 -->
             <a href="admin.html" class="p-2.5 bg-slate-900 hover:bg-slate-800 rounded-xl border border-slate-800 text-slate-400 hover:text-white transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -146,10 +145,26 @@
                 </button>
             </div>
 
+            <!-- GALERI GAMBAR SLIDER DENGAN NAVIGASI PANAH < DAN > -->
             <div class="relative w-full mb-4">
-                <div class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
+                <div class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 group">
                     <img id="d-gambar-utama" src="" class="w-full h-full object-cover transition-all duration-350">
+                    
+                    <!-- Tombol Panah Kiri < -->
+                    <button id="btn-prev-foto" onclick="geserFoto(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-slate-950/80 hover:bg-slate-900 text-white rounded-xl p-2 border border-slate-800/80 transition hidden flex items-center justify-center shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    
+                    <!-- Tombol Panah Kanan > -->
+                    <button id="btn-next-foto" onclick="geserFoto(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-950/80 hover:bg-slate-900 text-white rounded-xl p-2 border border-slate-800/80 transition hidden flex items-center justify-center shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
                 </div>
+                <!-- Mini Thumbnail List -->
                 <div id="d-thumbnail-container" class="flex gap-2 mt-2 overflow-x-auto scrollbar-hide py-1"></div>
             </div>
 
@@ -204,6 +219,10 @@
         let kategoriTerpilih = 'Semua';
         let queryCari = '';
         let currentItem = null;
+
+        // State Penampung Galeri Slider
+        let semuaFotoDrawer = [];
+        let fotoAktifIndex = 0;
 
         function dapatkanGambarUtama(gambarStr) {
             try {
@@ -326,36 +345,66 @@
             });
         }
 
+        // Fungsi Sinkronisasi Gambar Utama & Highlight Border Mini Thumbnail
+        function updateTampilanFotoDrawer(index) {
+            fotoAktifIndex = index;
+            document.getElementById('d-gambar-utama').src = semuaFotoDrawer[fotoAktifIndex];
+            
+            const thumbContainer = document.getElementById('d-thumbnail-container');
+            const currentThumbs = thumbContainer.querySelectorAll('img');
+            currentThumbs.forEach((t, idx) => {
+                if (idx === fotoAktifIndex) {
+                    t.classList.replace('border-slate-800', 'border-indigo-500');
+                    t.classList.add('scale-105');
+                } else {
+                    t.classList.replace('border-indigo-500', 'border-slate-800');
+                    t.classList.remove('scale-105');
+                }
+            });
+        }
+
+        // Fungsi Kontrol Menggeser Slide (Panah Kiri / Kanan)
+        function geserFoto(arah) {
+            if (semuaFotoDrawer.length <= 1) return;
+            let newIndex = fotoAktifIndex + arah;
+            
+            if (newIndex < 0) newIndex = semuaFotoDrawer.length - 1;
+            if (newIndex >= semuaFotoDrawer.length) newIndex = 0;
+            
+            updateTampilanFotoDrawer(newIndex);
+        }
+
         function bukaDrawer(produk) {
             currentItem = produk;
-            const semuaFoto = dapatkanSemuaGambar(produk.gambar);
+            semuaFotoDrawer = dapatkanSemuaGambar(produk.gambar);
+            fotoAktifIndex = 0;
             
-            document.getElementById('d-gambar-utama').src = semuaFoto[0];
+            document.getElementById('d-gambar-utama').src = semuaFotoDrawer[0];
 
+            const btnPrev = document.getElementById('btn-prev-foto');
+            const btnNext = document.getElementById('btn-next-foto');
             const thumbContainer = document.getElementById('d-thumbnail-container');
             thumbContainer.innerHTML = '';
             
-            if(semuaFoto.length > 1) {
+            if(semuaFotoDrawer.length > 1) {
+                // Tampilkan tombol navigasi panah kiri & kanan jika foto > 1
+                btnPrev.classList.remove('hidden');
+                btnNext.classList.remove('hidden');
                 thumbContainer.classList.remove('hidden');
-                semuaFoto.forEach((foto, index) => {
+                
+                semuaFotoDrawer.forEach((foto, index) => {
                     const thumb = document.createElement('img');
                     thumb.src = foto;
                     thumb.className = `w-12 h-12 object-cover rounded-lg border cursor-pointer shrink-0 transition-all ${
                         index === 0 ? 'border-indigo-500 scale-105' : 'border-slate-800'
                     }`;
-                    thumb.onclick = () => {
-                        document.getElementById('d-gambar-utama').src = foto;
-                        const currentThumbs = thumbContainer.querySelectorAll('img');
-                        currentThumbs.forEach(t => {
-                            t.classList.replace('border-indigo-500', 'border-slate-800');
-                            t.classList.remove('scale-105');
-                        });
-                        thumb.classList.replace('border-slate-800', 'border-indigo-500');
-                        thumb.classList.add('scale-105');
-                    };
+                    thumb.onclick = () => updateTampilanFotoDrawer(index);
                     thumbContainer.appendChild(thumb);
                 });
             } else {
+                // Sembunyikan jika gambar tunggal
+                btnPrev.classList.add('hidden');
+                btnNext.classList.add('hidden');
                 thumbContainer.classList.add('hidden');
             }
 
