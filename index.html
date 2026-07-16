@@ -37,12 +37,7 @@
                     <span class="text-[9px] text-cyan-400 font-bold tracking-widest block">SECURE GAME STATION</span>
                 </div>
             </div>
-            <a href="admin.html" class="p-2.5 bg-slate-900 hover:bg-slate-800 rounded-xl border border-slate-800 text-slate-400 hover:text-white transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-            </a>
+            <!-- TOMBOL MENUJU ADMIN DISINI SUDAH DIHAPUS AGAR TERSEMBUNYI -->
         </header>
 
         <!-- BANNER -->
@@ -145,26 +140,22 @@
                 </button>
             </div>
 
-            <!-- GALERI GAMBAR SLIDER DENGAN NAVIGASI PANAH < DAN > -->
             <div class="relative w-full mb-4">
                 <div class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 group">
                     <img id="d-gambar-utama" src="" class="w-full h-full object-cover transition-all duration-350">
                     
-                    <!-- Tombol Panah Kiri < -->
                     <button id="btn-prev-foto" onclick="geserFoto(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-slate-950/80 hover:bg-slate-900 text-white rounded-xl p-2 border border-slate-800/80 transition hidden flex items-center justify-center shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
                     
-                    <!-- Tombol Panah Kanan > -->
                     <button id="btn-next-foto" onclick="geserFoto(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-950/80 hover:bg-slate-900 text-white rounded-xl p-2 border border-slate-800/80 transition hidden flex items-center justify-center shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
                 </div>
-                <!-- Mini Thumbnail List -->
                 <div id="d-thumbnail-container" class="flex gap-2 mt-2 overflow-x-auto scrollbar-hide py-1"></div>
             </div>
 
@@ -220,7 +211,6 @@
         let queryCari = '';
         let currentItem = null;
 
-        // State Penampung Galeri Slider
         let semuaFotoDrawer = [];
         let fotoAktifIndex = 0;
 
@@ -345,7 +335,6 @@
             });
         }
 
-        // Fungsi Sinkronisasi Gambar Utama & Highlight Border Mini Thumbnail
         function updateTampilanFotoDrawer(index) {
             fotoAktifIndex = index;
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[fotoAktifIndex];
@@ -363,7 +352,6 @@
             });
         }
 
-        // Fungsi Kontrol Menggeser Slide (Panah Kiri / Kanan)
         function geserFoto(arah) {
             if (semuaFotoDrawer.length <= 1) return;
             let newIndex = fotoAktifIndex + arah;
@@ -387,7 +375,6 @@
             thumbContainer.innerHTML = '';
             
             if(semuaFotoDrawer.length > 1) {
-                // Tampilkan tombol navigasi panah kiri & kanan jika foto > 1
                 btnPrev.classList.remove('hidden');
                 btnNext.classList.remove('hidden');
                 thumbContainer.classList.remove('hidden');
@@ -402,7 +389,6 @@
                     thumbContainer.appendChild(thumb);
                 });
             } else {
-                // Sembunyikan jika gambar tunggal
                 btnPrev.classList.add('hidden');
                 btnNext.classList.add('hidden');
                 thumbContainer.classList.add('hidden');
