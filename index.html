@@ -30,7 +30,7 @@
         <header class="p-4 border-b border-slate-800 bg-[#0d1527]/90 backdrop-blur-md sticky top-0 z-30 flex justify-between items-center">
             <h1 class="font-extrabold text-indigo-400 tracking-widest text-sm">RANZZ STORE</h1>
             <div class="flex items-center gap-2">
-                <a href="https://whatsapp.com/channel/0029Vb6aiqD84OmJxmCm4z0j" target="_blank" class="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 Bird px-2 py-0.5 rounded-full font-bold hover:bg-indigo-500 hover:text-white transition">📢 Saluran WA</a>
+                <a href="https://whatsapp.com/channel/0029Vb6aiqD84OmJxmCm4z0j" target="_blank" class="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold hover:bg-indigo-500 hover:text-white transition">📢 Saluran WA</a>
                 <span class="flex items-center gap-1.5 text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold">
                     <span class="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping"></span> ONLINE
                 </span>
@@ -124,9 +124,9 @@
                 <button onclick="tutupDrawer()" class="p-1.5 bg-slate-900 rounded-lg text-slate-400 hover:text-white">✕</button>
             </div>
 
-            <!-- Bagian Gambar di dalam Drawer yang bisa diklik untuk Fullscreen Preview -->
+            <!-- Bagian Gambar di dalam Drawer -->
             <div class="relative w-full mb-4">
-                <div onclick="bukaPreviewFullscreen()" class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center cursor-zoom-in group">
+                <div onclick="bukaPreviewFullscreen()" class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center cursor-pointer group">
                     <img id="d-gambar-utama" src="" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs font-bold text-white">🔎 Klik untuk memperbesar</div>
                 </div>
@@ -184,12 +184,17 @@
         
         <!-- Wadah Gambar Utama Modal + Navigasi Slide -->
         <div class="relative w-full max-w-2xl px-4 flex items-center justify-center h-[70vh]">
-            <button onclick="geserFoto(-1)" class="absolute left-6 z-50 p-3 bg-slate-900/60 text-white rounded-full hover:bg-slate-800 transition text-xl font-bold border border-slate-700">&#10094;</button>
+            <!-- Tombol Kiri (Kembali) -->
+            <button onclick="geserFotoPreview(-1)" class="absolute left-6 z-50 p-3 bg-slate-900/60 text-white rounded-full hover:bg-slate-800 transition text-xl font-bold border border-slate-700">&#10094;</button>
+            
             <img id="p-gambar-fullscreen" src="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
-            <button onclick="geserFoto(1)" class="absolute right-6 z-50 p-3 bg-slate-900/60 text-white rounded-full hover:bg-slate-800 transition text-xl font-bold border border-slate-700">&#10095;</button>
+            
+            <!-- Tombol Kanan (Lanjut) -->
+            <button onclick="geserFotoPreview(1)" class="absolute right-6 z-50 p-3 bg-slate-900/60 text-white rounded-full hover:bg-slate-800 transition text-xl font-bold border border-slate-700">&#10095;</button>
         </div>
     </div>
 
+    <!-- ENGINE JAVASCRIPT -->
     <script>
         const SUPABASE_URL = 'https://edhonplddyebaeejwaco.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_sY9PVeH2lMnM47f9AUvgAA_roqfEeHv';
@@ -265,16 +270,30 @@
         function updateTampilanFotoDrawer(index) {
             fotoAktifIndex = index;
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[fotoAktifIndex];
-            document.getElementById('p-gambar-fullscreen').src = semuaFotoDrawer[fotoAktifIndex];
+            
+            const fullscreenImg = document.getElementById('p-gambar-fullscreen');
+            if (fullscreenImg) {
+                fullscreenImg.src = semuaFotoDrawer[fotoAktifIndex];
+            }
+
+            const currentThumbs = document.getElementById('d-thumbnail-container').querySelectorAll('img');
+            currentThumbs.forEach((t, idx) => {
+                if (idx === fotoAktifIndex) {
+                    t.classList.add('border-indigo-500', 'scale-105');
+                    t.classList.remove('border-slate-800');
+                } else {
+                    t.classList.remove('border-indigo-500', 'scale-105');
+                    t.classList.add('border-slate-800');
+                }
+            });
         }
 
-        function geserFoto(arah) {
+        function geserFotoPreview(arah) {
             if (semuaFotoDrawer.length <= 1) return;
             fotoAktifIndex = (fotoAktifIndex + arah + semuaFotoDrawer.length) % semuaFotoDrawer.length;
             updateTampilanFotoDrawer(fotoAktifIndex);
         }
 
-        // FUNGSI UTAMA UNTUK FULLSCREEN VIEW GAMBAR SLIDE
         function bukaPreviewFullscreen() {
             const previewModal = document.getElementById('preview-image-modal');
             document.getElementById('p-gambar-fullscreen').src = semuaFotoDrawer[fotoAktifIndex];
@@ -297,7 +316,9 @@
             if(semuaFotoDrawer.length > 1) {
                 thumbContainer.classList.remove('hidden');
                 semuaFotoDrawer.forEach((foto, idx) => {
-                    const thumb = document.createElement('img'); thumb.src = foto; thumb.className = "w-10 h-10 object-cover rounded border border-slate-800 shrink-0 cursor-pointer";
+                    const thumb = document.createElement('img'); 
+                    thumb.src = foto; 
+                    thumb.className = `w-12 h-12 object-cover rounded-lg border cursor-pointer shrink-0 transition-all ${idx === 0 ? 'border-indigo-500 scale-105' : 'border-slate-800'}`;
                     thumb.onclick = (e) => { e.stopPropagation(); updateTampilanFotoDrawer(idx); }; 
                     thumbContainer.appendChild(thumb);
                 });
@@ -329,7 +350,6 @@
             document.getElementById('ewallet-name').innerText = m.toUpperCase();
         }
 
-        // PROSES CHECKOUT MANUAL LANGSUNG KE WHATSAPP ADMIN (TANPA PAKASIR)
         async function prosesCheckout() {
             const phone = document.getElementById('buyer-phone').value.trim();
             const metode = document.querySelector('input[name="payment"]:checked').value;
@@ -381,13 +401,18 @@
         window.onload = () => { fetchProducts(); fetchReviews(); }
     </script>
 
-    <!-- TOMBOL FLOATING CHAT SALURAN WA -->
-    <a href="https://whatsapp.com/channel/0029Vb6aiqD84OmJxmCm4z0j" 
-       target="_blank" 
-       class="fixed bottom-6 right-6 z-40 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl p-3.5 shadow-xl shadow-indigo-500/20 transition-all hover:scale-105 flex items-center justify-center border border-indigo-400/40">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.5-5.739-1.446L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.965C16.528 1.977 14.06 Active 1.953 12.006 1.953c-5.448 0-9.876 4.373-9.88 9.803-.001 1.65.453 3.258 1.316 4.675l-1.01 3.693 3.793-.98c1.39.756 2.946 1.157 4.522 1.158zm10.744-7.44c-.287-.143-1.696-.838-1.959-.933-.262-.096-.452-.143-.642.143-.19.287-.735.933-.902 1.124-.166.19-.333.215-.62.071-.288-.143-1.215-.447-2.314-1.427-.855-.763-1.432-1.706-1.6-1.993-.167-.287-.018-.441.125-.583.129-.128.287-.335.43-.502.144-.167.192-.287.288-.479.095-.19.047-.359-.023-.502-.072-.143-.642-1.554-.879-2.129-.23-.556-.465-.48-.642-.48-.166-.003-.357-.004-.548-.004-.19 0-.5.072-.762.359-.262.287-1 .981-1 2.392s1.023 2.775 1.166 2.966c.143.19 2.014 3.076 4.88 4.317.682.296 1.214.474 1.63.607.687.218 1.312.187 1.807.114.551-.082 1.696-.694 1.935-1.365.238-.67.238-1.244.166-1.365-.071-.121-.262-.191-.548-.334z"/>
-        </svg>
-    </a>
+    <!-- Start of Tawk.to Script -->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6a5833fc03ec7a1d4cd01f5b/1jtk8m5je';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!-- End of Tawk.to Script -->
 </body>
 </html>
