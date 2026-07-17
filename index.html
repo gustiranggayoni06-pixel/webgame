@@ -310,7 +310,6 @@
                 const matchKategori = (kategoriTerpilih === 'Semua' || p.game === kategoriTerpilih);
                 const matchQuery = (p.nama.toLowerCase().includes(queryCari) || p.spek.toLowerCase().includes(queryCari));
                 
-                // Pembeda filter berdasarkan apakah admin mengisi kolom harga_rental atau tidak
                 if (sistemModeKatalog === 'rental') {
                     return matchKategori && matchQuery && (p.harga_rental !== null && p.harga_rental > 0);
                 } else {
@@ -330,7 +329,6 @@
                 card.onclick = () => bukaDrawer(p);
                 const color = p.status === 'Ready' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20';
                 
-                // Tampilan harga kartu menyesuaikan mode katalog aktif
                 const hargaTampil = sistemModeKatalog === 'rental' ? p.harga_rental : p.harga;
                 const embelEmbelText = sistemModeKatalog === 'rental' ? '/Jam' : '';
 
@@ -433,12 +431,9 @@
             drawer.classList.remove('hidden'); setTimeout(() => { drawer.classList.remove('opacity-0'); drawer.querySelector('.transform').classList.remove('translate-y-full'); }, 10);
         }
 
-        // KALKULASI HARGA SEWA BERDASARKAN INPUT HARGA RENTAL MANUAL ADMIN
         function hitungUlangHargaSewa() {
             if(sistemModeKatalog !== 'rental') return;
             const durasiKode = document.getElementById('rental-durasi').value;
-            
-            // Mengambil nilai dasar harga rental per jam langsung dari database buatan admin
             const tarifDasarPerJam = currentItem.harga_rental || 2000; 
 
             let labelDurasiTeks = "";
@@ -453,19 +448,19 @@
                 labelDurasiTeks = "3 Jam";
                 tambahanWaktuMilidetik = 3 * 60 * 60 * 1000;
             } else if (durasiKode === "6h") {
-                hargaFinalDihitung = Math.round(tarifDasarPerJam * 6 * 0.95); // Potongan paket 5%
+                hargaFinalDihitung = Math.round(tarifDasarPerJam * 6 * 0.95); 
                 labelDurasiTeks = "6 Jam";
                 tambahanWaktuMilidetik = 6 * 60 * 60 * 1000;
             } else if (durasiKode === "12h") {
-                hargaFinalDihitung = Math.round(tarifDasarPerJam * 12 * 0.90); // Potongan paket 10%
+                hargaFinalDihitung = Math.round(tarifDasarPerJam * 12 * 0.90); 
                 labelDurasiTeks = "12 Jam";
                 tambahanWaktuMilidetik = 12 * 60 * 60 * 1000;
             } else if (durasiKode === "1d") {
-                hargaFinalDihitung = Math.round(tarifDasarPerJam * 24 * 0.80); // Paket 1 hari diskon 20%
+                hargaFinalDihitung = Math.round(tarifDasarPerJam * 24 * 0.80); 
                 labelDurasiTeks = "1 Hari (24 Jam)";
                 tambahanWaktuMilidetik = 24 * 60 * 60 * 1000;
             } else if (durasiKode === "3d") {
-                hargaFinalDihitung = Math.round(tarifDasarPerJam * 24 * 3 * 0.70); // Paket 3 hari diskon 30%
+                hargaFinalDihitung = Math.round(tarifDasarPerJam * 24 * 3 * 0.70); 
                 labelDurasiTeks = "3 Hari";
                 tambahanWaktuMilidetik = 3 * 24 * 60 * 60 * 1000;
             }
@@ -579,20 +574,6 @@
         window.onload = () => { fetchProducts(); fetchReviews(); }
     </script>
 
-    <!-- Start of Tawk.to Script -->
-    <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/6a5833fc03ec7a1d4cd01f5b/1jtk8m5je';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
-    </script>
-    window.onload = () => { fetchProducts(); fetchReviews(); }
-    </script>
     <!-- Start of Tawk.to Script -->
     <script type="text/javascript">
     var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
