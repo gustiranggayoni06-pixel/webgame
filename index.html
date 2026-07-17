@@ -30,8 +30,7 @@
         <header class="p-4 border-b border-slate-800 bg-[#0d1527]/90 backdrop-blur-md sticky top-0 z-30 flex justify-between items-center">
             <h1 class="font-extrabold text-indigo-400 tracking-widest text-sm">RANZZ STORE</h1>
             <div class="flex items-center gap-2">
-                <!-- LINK SALURAN WA DI HEADER -->
-                <a href="https://whatsapp.com/channel/0029Vb6aiqD84OmJxmCm4z0j" target="_blank" class="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold hover:bg-indigo-500 hover:text-white transition">📢 Saluran WA</a>
+                <a href="https://whatsapp.com/channel/0029Vb6aiqD84OmJxmCm4z0j" target="_blank" class="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 Bird px-2 py-0.5 rounded-full font-bold hover:bg-indigo-500 hover:text-white transition">📢 Saluran WA</a>
                 <span class="flex items-center gap-1.5 text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold">
                     <span class="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping"></span> ONLINE
                 </span>
@@ -125,11 +124,11 @@
                 <button onclick="tutupDrawer()" class="p-1.5 bg-slate-900 rounded-lg text-slate-400 hover:text-white">✕</button>
             </div>
 
+            <!-- Bagian Gambar di dalam Drawer yang bisa diklik untuk Fullscreen Preview -->
             <div class="relative w-full mb-4">
-                <div class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
-                    <button id="btn-prev-foto" onclick="geserFoto(-1)" class="absolute left-2 p-2 bg-black/50 text-white rounded-full hidden z-10">&#10094;</button>
+                <div onclick="bukaPreviewFullscreen()" class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center cursor-zoom-in group">
                     <img id="d-gambar-utama" src="" class="w-full h-full object-cover">
-                    <button id="btn-next-foto" onclick="geserFoto(1)" class="absolute right-2 p-2 bg-black/50 text-white rounded-full hidden z-10">&#10095;</button>
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs font-bold text-white">🔎 Klik untuk memperbesar</div>
                 </div>
                 <div id="d-thumbnail-container" class="flex gap-2 mt-2 overflow-x-auto scrollbar-hide hidden"></div>
             </div>
@@ -156,7 +155,7 @@
                 <h4 class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Pilih Metode Pembayaran:</h4>
                 <div class="space-y-2">
                     <label id="label-qris" onclick="pilihMetode('qris')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-indigo-500 cursor-pointer transition-all">
-                        <input type="radio" name="payment" value="qris" checked class="hidden"><span class="ml-3 text-xs text-white font-bold">QRIS (Otomatis via Pakasir)</span>
+                        <input type="radio" name="payment" value="qris" checked class="hidden"><span class="ml-3 text-xs text-white font-bold">QRIS (Direct WA Admin)</span>
                     </label>
                     <label id="label-dana" onclick="pilihMetode('dana')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition-all">
                         <input type="radio" name="payment" value="dana" class="hidden"><span class="ml-3 text-xs text-white font-bold">DANA (Direct WA Admin)</span>
@@ -167,20 +166,33 @@
                 </div>
             </div>
 
-            <div id="ewallet-info-box" class="hidden p-3.5 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-xs space-y-1 mb-5">
+            <div id="ewallet-info-box" class="p-3.5 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-xs space-y-1 mb-5">
                 <p class="text-[10px] text-indigo-400 font-extrabold uppercase">Tujuan Pembayaran:</p>
-                <p class="text-white font-bold flex justify-between"><span>Metode:</span> <span id="ewallet-name">-</span></p>
+                <p class="text-white font-bold flex justify-between"><span>Metode:</span> <span id="ewallet-name">QRIS</span></p>
                 <p class="text-white font-bold flex justify-between"><span>No Admin:</span> <span class="text-cyan-400 font-extrabold">083157363740</span></p>
+                <p class="text-slate-400 text-[10px] mt-1 italic">*Silakan klik tombol bayar di bawah untuk meminta data barcode/nomor e-wallet tujuan serta konfirmasi data otomatis ke WhatsApp admin.</p>
             </div>
 
             <button onclick="prosesCheckout()" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 font-extrabold text-xs py-4 rounded-xl transition shadow-lg">BAYAR SEKARANG</button>
         </div> 
     </div>
 
+    <!-- MODAL FULLSCREEN PREVIEW GAMBAR SLIDE + TOMBOL BACK/X -->
+    <div id="preview-image-modal" class="fixed inset-0 bg-black/95 z-[60] flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <!-- Tombol Silang / Back -->
+        <button onclick="tutupPreviewFullscreen()" class="absolute top-6 right-6 z-50 bg-slate-900/80 hover:bg-slate-800 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg border border-slate-700 font-bold transition">✕</button>
+        
+        <!-- Wadah Gambar Utama Modal + Navigasi Slide -->
+        <div class="relative w-full max-w-2xl px-4 flex items-center justify-center h-[70vh]">
+            <button onclick="geserFoto(-1)" class="absolute left-6 z-50 p-3 bg-slate-900/60 text-white rounded-full hover:bg-slate-800 transition text-xl font-bold border border-slate-700">&#10094;</button>
+            <img id="p-gambar-fullscreen" src="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+            <button onclick="geserFoto(1)" class="absolute right-6 z-50 p-3 bg-slate-900/60 text-white rounded-full hover:bg-slate-800 transition text-xl font-bold border border-slate-700">&#10095;</button>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://edhonplddyebaeejwaco.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_sY9PVeH2lMnM47f9AUvgAA_roqfEeHv';
-        const GATEWAY_SLUG = 'depodomain'; 
         const WA_ADMIN_TAMPILAN = '6283157363740'; 
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -253,6 +265,7 @@
         function updateTampilanFotoDrawer(index) {
             fotoAktifIndex = index;
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[fotoAktifIndex];
+            document.getElementById('p-gambar-fullscreen').src = semuaFotoDrawer[fotoAktifIndex];
         }
 
         function geserFoto(arah) {
@@ -261,19 +274,34 @@
             updateTampilanFotoDrawer(fotoAktifIndex);
         }
 
+        // FUNGSI UTAMA UNTUK FULLSCREEN VIEW GAMBAR SLIDE
+        function bukaPreviewFullscreen() {
+            const previewModal = document.getElementById('preview-image-modal');
+            document.getElementById('p-gambar-fullscreen').src = semuaFotoDrawer[fotoAktifIndex];
+            previewModal.classList.remove('hidden');
+            setTimeout(() => { previewModal.classList.remove('opacity-0'); }, 10);
+        }
+
+        function tutupPreviewFullscreen() {
+            const previewModal = document.getElementById('preview-image-modal');
+            previewModal.classList.add('opacity-0');
+            setTimeout(() => { previewModal.classList.add('hidden'); }, 300);
+        }
+
         function bukaDrawer(produk) {
             currentItem = produk; semuaFotoDrawer = dapatkanSemuaGambar(produk.gambar); fotoAktifIndex = 0;
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[0];
             
-            const btnPrev = document.getElementById('btn-prev-foto'), btnNext = document.getElementById('btn-next-foto'), thumbContainer = document.getElementById('d-thumbnail-container');
+            const thumbContainer = document.getElementById('d-thumbnail-container');
             thumbContainer.innerHTML = '';
             if(semuaFotoDrawer.length > 1) {
-                btnPrev.classList.remove('hidden'); btnNext.classList.remove('hidden'); thumbContainer.classList.remove('hidden');
+                thumbContainer.classList.remove('hidden');
                 semuaFotoDrawer.forEach((foto, idx) => {
-                    const thumb = document.createElement('img'); thumb.src = foto; thumb.className = "w-10 h-10 object-cover rounded border border-slate-800 shrink-0";
-                    thumb.onclick = () => updateTampilanFotoDrawer(idx); thumbContainer.appendChild(thumb);
+                    const thumb = document.createElement('img'); thumb.src = foto; thumb.className = "w-10 h-10 object-cover rounded border border-slate-800 shrink-0 cursor-pointer";
+                    thumb.onclick = (e) => { e.stopPropagation(); updateTampilanFotoDrawer(idx); }; 
+                    thumbContainer.appendChild(thumb);
                 });
-            } else { btnPrev.classList.add('hidden'); btnNext.classList.add('hidden'); thumbContainer.classList.add('hidden'); }
+            } else { thumbContainer.classList.add('hidden'); }
 
             document.getElementById('d-nama').innerText = produk.nama;
             document.getElementById('d-spek').innerText = produk.spek;
@@ -298,27 +326,27 @@
             ['label-qris', 'label-dana', 'label-gopay'].forEach(id => document.getElementById(id).classList.replace('border-indigo-500', 'border-slate-800'));
             document.getElementById('label-' + m).classList.replace('border-slate-800', 'border-indigo-500');
             document.querySelector(`input[value="${m}"]`).checked = true;
-            
-            const infoBox = document.getElementById('ewallet-info-box');
-            if(m === 'dana' || m === 'gopay') { infoBox.classList.remove('hidden'); document.getElementById('ewallet-name').innerText = m.toUpperCase(); }
-            else { infoBox.classList.add('hidden'); }
+            document.getElementById('ewallet-name').innerText = m.toUpperCase();
         }
 
+        // PROSES CHECKOUT MANUAL LANGSUNG KE WHATSAPP ADMIN (TANPA PAKASIR)
         async function prosesCheckout() {
             const phone = document.getElementById('buyer-phone').value.trim();
             const metode = document.querySelector('input[name="payment"]:checked').value;
-            if(!phone) { alert('Isi no WA!'); return; }
+            if(!phone) { alert('Isi nomor WhatsApp Anda dahulu!'); return; }
             
             const orderId = `RNZ-${Date.now().toString().slice(-6)}`;
-            let txt = `*BELI AKUN ${metode.toUpperCase()}*\nID: ${orderId}\nAkun: ${currentItem.nama}\nHarga: Rp ${parseInt(currentItem.harga).toLocaleString('id-ID')}\nWA: ${phone}`;
+            let txt = `*MINTA DATA TRANSAKSI ${metode.toUpperCase()}*\n\n` +
+                      `Halo Admin Ranzz Store, saya ingin melakukan pemesanan akun via ${metode.toUpperCase()}.\n\n` +
+                      `🔖 *ID Transaksi:* ${orderId}\n` +
+                      `📦 *Produk Akun:* ${currentItem.nama}\n` +
+                      `💵 *Total Tagihan:* Rp ${parseInt(currentItem.harga).toLocaleString('id-ID')}\n` +
+                      `📞 *Nomor WhatsApp Anda:* ${phone}\n\n` +
+                      `Mohon segera kirimkan detail barcode QRIS / Nomor tujuan E-Wallet milik admin untuk saya bayar min!`;
 
             try {
-                await supabaseClient.from('orders').insert([{ order_id: orderId, nama_akun: currentItem.nama, harga: currentItem.harga, status: 'Pending ('+metode.toUpperCase()+')', wa_pembeli: phone }]);
-                if (metode === 'qris') {
-                    window.location.href = `https://app.pakasir.com/pay/${GATEWAY_SLUG}/${currentItem.harga}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/'+WA_ADMIN_TAMPILAN+'?text='+encodeURIComponent(txt))}`;
-                } else {
-                    window.location.href = `https://wa.me/${WA_ADMIN_TAMPILAN}?text=${encodeURIComponent(txt)}`;
-                }
+                await supabaseClient.from('orders').insert([{ order_id: orderId, nama_akun: currentItem.nama, harga: currentItem.harga, status: 'Menunggu Pembayaran ('+metode.toUpperCase()+')', wa_pembeli: phone }]);
+                window.location.href = `https://wa.me/${WA_ADMIN_TAMPILAN}?text=${encodeURIComponent(txt)}`;
             } catch(e) { alert(e.message); }
         }
 
@@ -353,7 +381,7 @@
         window.onload = () => { fetchProducts(); fetchReviews(); }
     </script>
 
-    <!-- TOMBOL FLOATING CHAT / HUBUNGI SALURAN WA (SUDAH DISATUKAN BUKAN TAWK.TO) -->
+    <!-- TOMBOL FLOATING CHAT SALURAN WA -->
     <a href="https://whatsapp.com/channel/0029Vb6aiqD84OmJxmCm4z0j" 
        target="_blank" 
        class="fixed bottom-6 right-6 z-40 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl p-3.5 shadow-xl shadow-indigo-500/20 transition-all hover:scale-105 flex items-center justify-center border border-indigo-400/40">
