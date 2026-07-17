@@ -3,413 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ranzz Store — Admin Control Panel</title>
+    <title>Ranzz Store — Admin Control Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] } }
+            }
+        }
+    </script>
     <style>
-        body { background-color: #080c14; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #040814; color: #f8fafc; }
     </style>
 </head>
-<body class="antialiased min-h-screen py-8 px-4">
+<body class="antialiased min-h-screen">
 
-    <!-- LOGIN PANEL -->
-    <div id="auth-panel" class="max-w-sm mx-auto bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-2xl mt-12">
-        <div class="text-center mb-5">
-            <span class="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest block">ADMIN ACCESS</span>
-            <h2 class="text-lg font-extrabold text-white mt-1">Sistem Keamanan Toko</h2>
-        </div>
-        <div class="space-y-4">
-            <input type="password" id="admin-pin" placeholder="Masukkan PIN Admin (Bawaan: 3008)" class="w-full bg-slate-900 text-white text-center text-xs py-3 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500">
-            <button onclick="masukDashboard()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 rounded-xl transition">Akses Panel</button>
-        </div>
-    </div>
-
-    <!-- MAIN ADMIN PANEL -->
-    <div id="main-panel" class="max-w-2xl mx-auto bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-2xl hidden">
+    <div class="flex flex-col md:flex-row min-h-screen">
         
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-5 mb-6">
+        <!-- SIDEBAR / LOGO PANEL -->
+        <div class="w-full md:w-64 bg-[#0d1527] border-b md:border-b-0 md:border-r border-slate-800 p-6 flex flex-col justify-between">
             <div>
-                <h1 class="text-lg font-extrabold text-white uppercase tracking-wider">Ranzz Store Management</h1>
-                <p class="text-[11px] text-slate-400">Kelola akun, edit status, dan pantau omzet penjualan secara langsung.</p>
+                <h2 class="font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 tracking-wider">RNZ CONTROL</h2>
+                <p class="text-[10px] text-slate-500 uppercase mt-1">Console Cloud V2.0</p>
+                <nav class="mt-8 space-y-2">
+                    <a href="#produk-section" class="block px-4 py-2.5 bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 rounded-xl font-bold text-xs">📦 Manajemen Akun</a>
+                    <a href="#order-section" class="block px-4 py-2.5 bg-slate-900 border border-slate-800/80 text-slate-400 rounded-xl font-bold text-xs hover:border-slate-700 transition">💵 Transaksi Masuk</a>
+                </nav>
             </div>
-            <div class="flex gap-2">
-                <a href="index.html" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] font-bold transition">Lihat Toko</a>
-                <button onclick="keluarSesi()" class="px-3 py-2 bg-red-950/40 border border-red-800 hover:bg-red-900 rounded-lg text-[10px] font-bold text-red-400 transition">Log Out</button>
+            <div class="hidden md:block pt-4 border-t border-slate-800/60 text-[10px] text-slate-600">
+                Connected to Database Supabase Cloud Secure.
             </div>
         </div>
 
-        <section class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-8">
-            <div class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
-                <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Total Produk</span>
-                <span id="stat-total" class="text-lg font-extrabold text-white mt-1 block">0</span>
-            </div>
-            <div class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
-                <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Aset Ready</span>
-                <span id="stat-ready" class="text-lg font-extrabold text-emerald-400 mt-1 block">0</span>
-            </div>
-            <div class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
-                <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Terjual / Sold</span>
-                <span id="stat-sold" class="text-lg font-extrabold text-red-400 mt-1 block">0</span>
-            </div>
-            <div class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
-                <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Estimasi Omzet</span>
-                <span id="stat-revenue" class="text-lg font-extrabold text-cyan-400 mt-1 block">Rp 0</span>
-            </div>
-        </section>
-
-        <section class="bg-slate-900/40 border border-slate-800/80 p-5 rounded-xl mb-8">
-            <h3 id="form-header" class="text-xs font-bold text-white tracking-widest uppercase border-l-2 border-cyan-400 pl-2 mb-4">Tambah Akun Baru</h3>
-            <input type="hidden" id="item-uuid">
+        <!-- MAIN WINDOW AREA -->
+        <div class="flex-grow p-6 space-y-8 overflow-y-auto max-w-6xl">
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Nama Kategori Game:</label>
-                    <input type="text" id="p-game" placeholder="Contoh: ML, FF, PUBG" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Nama Judul Akun:</label>
-                    <input type="text" id="p-nama" placeholder="Contoh: Mobile Legends Sultan S25" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
-                </div>
-                <div class="sm:col-span-2">
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Spesifikasi Singkat:</label>
-                    <input type="text" id="p-spek" placeholder="Contoh: Skin Granger Collector, WR Aman 60%" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Nominal Harga:</label>
-                    <input type="number" id="p-harga" placeholder="Contoh: 350000" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Status Ketersediaan:</label>
-                    <select id="p-status" class="w-full bg-slate-900 text-slate-300 text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
-                        <option value="Ready">Ready (Tersedia)</option>
-                        <option value="Sold Out">Sold Out (Terjual)</option>
-                    </select>
-                </div>
+            <!-- SECTION 1: TAMBAH PRODUK -->
+            <section id="produk-section" class="bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <h3 class="font-extrabold text-white text-sm uppercase tracking-wider mb-4 text-indigo-400">Tambah Akun Game Baru</h3>
                 
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Nickname Akun:</label>
-                    <input type="text" id="p-nick" placeholder="Contoh: RanzzSlayer" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Total Jumlah Skin:</label>
-                    <input type="text" id="p-skin" placeholder="Contoh: 145 Skins" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Win Rate / Level Akun:</label>
-                    <input type="text" id="p-wr" placeholder="Contoh: WR 65.2% / Lv 72" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Data Login Via:</label>
-                    <input type="text" id="p-login" placeholder="Contoh: Login Moonton Lengkap" class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none">
-                </div>
+                <form id="product-form" onsubmit="simpanProduk(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="space-y-3">
+                        <div><label class="block text-slate-400 mb-1 font-bold">Nama Judul Akun</label><input type="text" id="p-nama" required placeholder="Contoh: FF Spek Evogun Max" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
+                        <div><label class="block text-slate-400 mb-1 font-bold">Kategori Game</label><input type="text" id="p-game" required placeholder="Contoh: FF, MLBB, Valorant" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
+                        <div><label class="block text-slate-400 mb-1 font-bold">Harga Akun (Angka Saja)</label><input type="number" id="p-harga" required placeholder="Contoh: 150000" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
+                        <div><label class="block text-slate-400 mb-1 font-bold">Link URL Gambar (Gunakan format array JSON jika banyak foto)</label><input type="text" id="p-gambar" required placeholder='Contoh: ["https://link1.png", "https://link2.png"]' class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
+                    </div>
 
-                <div class="sm:col-span-2">
-                    <label class="block text-[9px] font-bold text-slate-500 mb-1 tracking-wider uppercase">Unggah Foto Produk (Bisa Pilih Banyak):</label>
-                    <input type="file" id="p-gambar" accept="image/*" multiple class="w-full bg-slate-900 text-white text-xs px-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500">
-                    <p class="text-[8px] text-slate-500 mt-1">Anda bisa memilih lebih dari 1 foto. Sistem akan mengkompresi gambar secara otomatis agar kuota Cloud aman.</p>
-                    <div id="previews-container" class="flex gap-2.5 mt-3 overflow-x-auto py-1.5"></div>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="block text-slate-400 mb-1 font-bold">Nickname</label><input type="text" id="p-nick" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none"></div>
+                            <div><label class="block text-slate-400 mb-1 font-bold">Jumlah Skin</label><input type="text" id="p-skin" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="block text-slate-400 mb-1 font-bold">Sistem Login</label><input type="text" id="p-login" placeholder="Moonton / FB / VK" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none"></div>
+                            <div><label class="block text-slate-400 mb-1 font-bold">Win Rate Akun</label><input type="text" id="p-wr" placeholder="Contoh: 65%" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none"></div>
+                        </div>
+                        <div><label class="block text-slate-400 mb-1 font-bold">Deskripsi / Spesifikasi Lengkap</label><textarea id="p-spek" required rows="3" placeholder="Tulis rincian kelengkapan inventori akun di sini..." class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></textarea></div>
+                    </div>
+
+                    <div class="md:col-span-2 pt-2">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3.5 rounded-xl transition shadow-lg">UPLOAD KE CLOUD STORE</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- SECTION 2: LIVE DATATABLE TRANSAKSI -->
+            <section id="order-section" class="bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <h3 class="font-extrabold text-white text-sm uppercase tracking-wider mb-4 text-cyan-400">Daftar Transaksi Masuk</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-[11px] text-left text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-[9px] tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">ID Transaksi</th>
+                                <th class="p-3">Nama Akun</th>
+                                <th class="p-3">Nominal</th>
+                                <th class="p-3">No. WA Pembeli</th>
+                                <th class="p-3">Status Pembayaran</th>
+                                <th class="p-3">Aksi Panel</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-table">
+                            <tr><td colspan="6" class="p-4 text-center text-slate-600 animate-pulse">Menghubungkan data cloud...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+            </section>
 
-            <div class="mt-5 flex gap-2">
-                <button onclick="simpanItem()" id="btn-submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition flex justify-center items-center">
-                    <span id="btn-text">Simpan Akun</span>
-                </button>
-                <button onclick="bersihkanForm()" id="btn-cancel" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-lg transition hidden">Batal</button>
-            </div>
-        </section>
-
-        <!-- DAFTAR KATALOG -->
-        <section>
-            <h3 class="text-xs font-bold text-white tracking-widest uppercase border-l-2 border-cyan-400 pl-2 mb-4">Data Akun Terdaftar</h3>
-            <div class="space-y-3" id="admin-list-container"></div>
-        </section>
-
+        </div>
     </div>
 
     <script>
-        const PIN_ADMIN_SECURE = '3008'; 
-
-        // Kunci API yang sudah diperbaiki
         const SUPABASE_URL = 'https://edhonplddyebaeejwaco.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_sY9PVeH2lMnM47f9AUvgAA_roqfEeHv';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let dbAdmin = [];
-        let listGambarBase64 = []; 
-
-        function masukDashboard() {
-            const input = document.getElementById('admin-pin').value;
-            if (input === PIN_ADMIN_SECURE) {
-                // sessionStorage digunakan hanya untuk cek status login sementara, tidak ada kaitannya dengan simpanan data base64.
-                sessionStorage.setItem('authorized_session', 'true');
-                aktifkanPanel();
-            } else {
-                alert('Akses Ditolak! Kode PIN tidak cocok.');
-            }
-        }
-
-        function aktifkanPanel() {
-            document.getElementById('auth-panel').classList.add('hidden');
-            document.getElementById('main-panel').classList.remove('hidden');
-            muatProdukAdmin();
-        }
-
-        function keluarSesi() {
-            sessionStorage.removeItem('authorized_session');
-            document.getElementById('auth-panel').classList.remove('hidden');
-            document.getElementById('main-panel').classList.add('hidden');
-            document.getElementById('admin-pin').value = '';
-        }
-
-        document.getElementById('p-gambar').addEventListener('change', async function(e) {
-            const files = e.target.files;
-            listGambarBase64 = []; 
-            
-            for(let i = 0; i < files.length; i++) {
-                const b64 = await convertFileToBase64(files[i]);
-                listGambarBase64.push(b64);
-            }
-            renderPreviews();
-        });
-
-        // Menggunakan canvas compression untuk mengecilkan size agar tidak membengkak di kolom Supabase
-        function convertFileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
-                        resolve(canvas.toDataURL('image/jpeg', 0.6));
-                    };
-                    img.onerror = error => reject(error);
-                };
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        function renderPreviews() {
-            const container = document.getElementById('previews-container');
-            container.innerHTML = '';
-
-            listGambarBase64.forEach((b64, idx) => {
-                const frame = document.createElement('div');
-                frame.className = "relative w-16 h-16 rounded-lg overflow-hidden border border-slate-800 shrink-0";
-                frame.innerHTML = `
-                    <img src="${b64}" class="w-full h-full object-cover">
-                    <button type="button" onclick="hapusPreview(${idx})" class="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full w-4.5 h-4.5 flex items-center justify-center text-[8px] font-bold">X</button>
-                `;
-                container.appendChild(frame);
-            });
-        }
-
-        function hapusPreview(index) {
-            listGambarBase64.splice(index, 1);
-            renderPreviews();
-        }
-
-        async function muatProdukAdmin() {
-            try {
-                const { data, error } = await supabaseClient.from('products').select('*');
-                if (error) throw error;
-                dbAdmin = data;
-
-                const container = document.getElementById('admin-list-container');
-                container.innerHTML = '';
-
-                let total = dbAdmin.length;
-                let ready = dbAdmin.filter(p => p.status === 'Ready').length;
-                let sold = dbAdmin.filter(p => p.status === 'Sold Out').length;
-                let revenue = dbAdmin.filter(p => p.status === 'Sold Out').reduce((acc, p) => acc + parseInt(p.harga), 0);
-
-                document.getElementById('stat-total').innerText = total;
-                document.getElementById('stat-ready').innerText = ready;
-                document.getElementById('stat-sold').innerText = sold;
-                document.getElementById('stat-revenue').innerText = 'Rp ' + revenue.toLocaleString('id-ID');
-
-                if (dbAdmin.length === 0) {
-                    container.innerHTML = `<p class="text-xs text-slate-500 text-center py-5">Belum ada katalog didaftarkan.</p>`;
-                    return;
-                }
-
-                dbAdmin.forEach((p) => {
-                    const item = document.createElement('div');
-                    item.className = "flex items-center justify-between gap-3 bg-slate-900 border border-slate-800 p-3 rounded-xl";
-                    
-                    let gambarTampil = p.gambar;
-                    try {
-                        const parsed = JSON.parse(p.gambar);
-                        if(Array.isArray(parsed) && parsed.length > 0) gambarTampil = parsed[0];
-                    } catch(e){}
-
-                    item.innerHTML = `
-                        <div class="flex items-center gap-3 overflow-hidden w-full">
-                            <img src="${gambarTampil}" class="w-10 h-10 rounded-lg object-cover shrink-0 bg-slate-950">
-                            <div class="overflow-hidden">
-                                <h4 class="text-xs font-bold text-white truncate">${p.nama}</h4>
-                                <p class="text-[9px] text-slate-500 truncate mt-0.5">${p.spek}</p>
-                                <span class="text-[9px] text-cyan-400 font-bold block mt-0.5">Rp ${parseInt(p.harga).toLocaleString('id-ID')} | [${p.game}] | Status: ${p.status}</span>
-                            </div>
-                        </div>
-                        <div class="flex gap-1.5 shrink-0">
-                            <button onclick="pemicuEdit('${p.id}')" class="p-2 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-400 hover:text-slate-950 rounded-lg transition">
-                                ✏️
-                            </button>
-                            <button onclick="hapusAkun('${p.id}', '${p.nama}')" class="p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg transition">
-                                🗑️
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(item);
-                });
-            } catch (err) {
-                console.error("Kesalahan sinkronisasi database: ", err.message);
-            }
-        }
-
-        async function simpanItem() {
-            const uuid = document.getElementById('item-uuid').value;
-            const game = document.getElementById('p-game').value.trim().toUpperCase();
-            const nama = document.getElementById('p-nama').value.trim();
-            const spek = document.getElementById('p-spek').value.trim();
+        async function simpanProduk(e) {
+            e.preventDefault();
+            const nama = document.getElementById('p-nama').value;
+            const game = document.getElementById('p-game').value;
             const harga = parseInt(document.getElementById('p-harga').value);
-            const status = document.getElementById('p-status').value;
-
-            const nick = document.getElementById('p-nick').value.trim();
-            const skin = document.getElementById('p-skin').value.trim();
-            const wr = document.getElementById('p-wr').value.trim();
-            const login = document.getElementById('p-login').value.trim();
-
-            if (!game || !nama || !spek || isNaN(harga)) {
-                alert('Harap lengkapi semua isian kolom form utama!');
-                return;
-            }
-
-            if (listGambarBase64.length === 0 && !uuid) {
-                alert('Tolong unggah minimal 1 foto produk!');
-                return;
-            }
-
-            const btnSubmit = document.getElementById('btn-submit');
-            const originalText = btnSubmit.innerHTML;
-            btnSubmit.innerHTML = `<span class="animate-pulse">Menyimpan...</span>`;
-            btnSubmit.disabled = true;
-
-            let gambarFinalString = "";
-            if (listGambarBase64.length > 0) {
-                gambarFinalString = JSON.stringify(listGambarBase64);
-            } else if (uuid) {
-                const produkLama = dbAdmin.find(item => item.id === uuid);
-                gambarFinalString = produkLama.gambar;
-            }
-
-            const payload = { game, nama, spek, harga, status, gambar: gambarFinalString, nick, skin, wr, login };
+            const gambar = document.getElementById('p-gambar').value;
+            const nick = document.getElementById('p-nick').value;
+            const skin = document.getElementById('p-skin').value;
+            const login = document.getElementById('p-login').value;
+            const wr = document.getElementById('p-wr').value;
+            const spek = document.getElementById('p-spek').value;
 
             try {
-                if (uuid) {
-                    const { error } = await supabaseClient.from('products').update(payload).eq('id', uuid);
-                    if (error) throw error;
-                    alert('Detail akun berhasil diperbarui!');
-                } else {
-                    const { error } = await supabaseClient.from('products').insert([payload]);
-                    if (error) throw error;
-                    alert('Katalog akun baru telah didaftarkan!');
-                }
-                bersihkanForm();
-                muatProdukAdmin();
-            } catch (err) {
-                alert('Gagal menyimpan data. Pastikan konfigurasi RLS (Row Level Security) Supabase Anda telah diizinkan: ' + err.message);
-            } finally {
-                btnSubmit.innerHTML = originalText;
-                btnSubmit.disabled = false;
-            }
+                const { error } = await supabaseClient.from('products').insert([{
+                    nama, game, harga, gambar, nick, skin, login, wr, spek, status: 'Ready'
+                }]);
+                if (error) throw error;
+                alert('Produk berhasil ditambahkan ke database!');
+                document.getElementById('product-form').reset();
+            } catch (err) { alert('Gagal menyimpan: ' + err.message); }
         }
 
-        function pemicuEdit(id) {
-            const p = dbAdmin.find(item => item.id === id);
-            if (!p) return;
-
-            document.getElementById('item-uuid').value = p.id;
-            document.getElementById('p-game').value = p.game;
-            document.getElementById('p-nama').value = p.nama;
-            document.getElementById('p-spek').value = p.spek;
-            document.getElementById('p-harga').value = p.harga;
-            document.getElementById('p-status').value = p.status;
-
-            document.getElementById('p-nick').value = p.nick || '';
-            document.getElementById('p-skin').value = p.skin || '';
-            document.getElementById('p-wr').value = p.wr || '';
-            document.getElementById('p-login').value = p.login || '';
-
+        async function fetchAdminOrders() {
             try {
-                const parsed = JSON.parse(p.gambar);
-                if (Array.isArray(parsed)) {
-                    listGambarBase64 = parsed;
-                } else {
-                    listGambarBase64 = [p.gambar];
-                }
-            } catch(e) {
-                listGambarBase64 = [p.gambar];
-            }
-            renderPreviews();
+                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                const tbody = document.getElementById('admin-orders-table');
+                tbody.innerHTML = '';
 
-            document.getElementById('form-header').innerText = "Edit Detail Akun";
-            document.getElementById('btn-submit').innerHTML = `<span id="btn-text">Simpan Perubahan</span>`;
-            document.getElementById('btn-cancel').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+                if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-600">Belum ada transaksi masuk.</td></tr>'; return; }
+
+                data.forEach(o => {
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-900/60 hover:bg-slate-900/40 transition-colors";
+                    tr.innerHTML = `
+                        <td class="p-3 font-mono text-indigo-400 font-bold">${o.order_id}</td>
+                        <td class="p-3 font-bold text-white">${o.nama_akun}</td>
+                        <td class="p-3 text-cyan-400 font-extrabold">Rp ${parseInt(o.harga).toLocaleString('id-ID')}</td>
+                        <td class="p-3 font-mono">${o.wa_pembeli}</td>
+                        <td class="p-3 font-bold"><span class="px-2 py-0.5 rounded bg-slate-950 text-amber-400">${o.status}</span></td>
+                        <td class="p-3 flex gap-2">
+                            <button onclick="updateStatus('${o.order_id}', 'Sukses / Lunas')" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black px-2 py-1 rounded transition">Lunas</button>
+                            <button onclick="updateStatus('${o.order_id}', 'Gagal / Cancel')" class="bg-red-950 border border-red-800 text-red-400 px-2 py-1 rounded transition">Batal</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) { console.error(err); }
         }
 
-        async function hapusAkun(id, nama) {
-            if (confirm(`Yakin ingin menghapus item "${nama}" dari database Cloud?`)) {
-                try {
-                    const { error } = await supabaseClient.from('products').delete().eq('id', id);
-                    if (error) throw error;
-                    muatProdukAdmin();
-                } catch (err) {
-                    alert('Gagal menghapus: ' + err.message);
-                }
-            }
+        async function updateStatus(orderId, statusBaru) {
+            try {
+                const { error } = await supabaseClient.from('orders').update({ status: statusBaru }).eq('order_id', orderId);
+                if (error) throw error;
+                alert(`Status pesanan ${orderId} berhasil diubah menjadi ${statusBaru}!`);
+                fetchAdminOrders();
+            } catch (err) { alert('Gagal update status: ' + err.message); }
         }
 
-        function bersihkanForm() {
-            document.getElementById('item-uuid').value = '';
-            document.getElementById('p-game').value = '';
-            document.getElementById('p-nama').value = '';
-            document.getElementById('p-spek').value = '';
-            document.getElementById('p-harga').value = '';
-            document.getElementById('p-status').value = 'Ready';
-            
-            document.getElementById('p-nick').value = '';
-            document.getElementById('p-skin').value = '';
-            document.getElementById('p-wr').value = '';
-            document.getElementById('p-login').value = '';
-            document.getElementById('p-gambar').value = '';
-
-            listGambarBase64 = [];
-            document.getElementById('previews-container').innerHTML = '';
-
-            document.getElementById('form-header').innerText = "Tambah Akun Baru";
-            document.getElementById('btn-submit').innerHTML = `<span id="btn-text">Simpan Akun</span>`;
-            document.getElementById('btn-cancel').classList.add('hidden');
-        }
-
-        window.onload = () => {
-            if (sessionStorage.getItem('authorized_session') === 'true') {
-                aktifkanPanel();
-            }
-        }
+        window.onload = () => { fetchAdminOrders(); }
     </script>
 </body>
 </html>
