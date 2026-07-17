@@ -124,7 +124,7 @@
                 <button onclick="tutupDrawer()" class="p-1.5 bg-slate-900 rounded-lg text-slate-400 hover:text-white">✕</button>
             </div>
 
-            <!-- Bagian Gambar di dalam Drawer -->
+            <!-- Gambar Slider -->
             <div class="relative w-full mb-4">
                 <div onclick="bukaPreviewFullscreen()" class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center cursor-pointer group">
                     <img id="d-gambar-utama" src="" class="w-full h-full object-cover">
@@ -139,11 +139,20 @@
                 <span id="d-harga" class="text-sm font-extrabold text-cyan-400 mt-1">Rp 0</span>
             </div>
 
+            <!-- GRID AREA SPESIFIKASI DINAMIS (TEXT BISA BERUBAH) -->
             <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 mb-5">
-                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between"><span>Nick:</span> <span id="d-nick" class="font-bold text-white"></span></div>
-                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between"><span>Skin:</span> <span id="d-skin" class="font-bold text-white"></span></div>
-                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between"><span>Login:</span> <span id="d-login" class="font-bold text-white"></span></div>
-                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between"><span>WR:</span> <span id="d-wr" class="font-bold text-white"></span></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between">
+                    <span id="lbl-nick">Nick:</span> <span id="d-nick" class="font-bold text-white"></span>
+                </div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between">
+                    <span id="lbl-skin">Skin:</span> <span id="d-skin" class="font-bold text-white"></span>
+                </div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between">
+                    <span id="lbl-login">Login:</span> <span id="d-login" class="font-bold text-white"></span>
+                </div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between">
+                    <span id="lbl-wr">WR:</span> <span id="d-wr" class="font-bold text-white"></span>
+                </div>
             </div>
 
             <div class="mb-5">
@@ -177,19 +186,12 @@
         </div> 
     </div>
 
-    <!-- MODAL FULLSCREEN PREVIEW GAMBAR SLIDE + TOMBOL BACK/X -->
+    <!-- MODAL FULLSCREEN PREVIEW -->
     <div id="preview-image-modal" class="fixed inset-0 bg-black/95 z-[60] flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <!-- Tombol Silang / Back -->
         <button onclick="tutupPreviewFullscreen()" class="absolute top-6 right-6 z-50 bg-slate-900/80 hover:bg-slate-800 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg border border-slate-700 font-bold transition">✕</button>
-        
-        <!-- Wadah Gambar Utama Modal + Navigasi Slide -->
         <div class="relative w-full max-w-2xl px-4 flex items-center justify-center h-[70vh]">
-            <!-- Tombol Kiri (Kembali) -->
             <button onclick="geserFotoPreview(-1)" class="absolute left-6 z-50 p-3 bg-slate-900/60 text-white rounded-full hover:bg-slate-800 transition text-xl font-bold border border-slate-700">&#10094;</button>
-            
             <img id="p-gambar-fullscreen" src="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
-            
-            <!-- Tombol Kanan (Lanjut) -->
             <button onclick="geserFotoPreview(1)" class="absolute right-6 z-50 p-3 bg-slate-900/60 text-white rounded-full hover:bg-slate-800 transition text-xl font-bold border border-slate-700">&#10095;</button>
         </div>
     </div>
@@ -270,22 +272,8 @@
         function updateTampilanFotoDrawer(index) {
             fotoAktifIndex = index;
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[fotoAktifIndex];
-            
             const fullscreenImg = document.getElementById('p-gambar-fullscreen');
-            if (fullscreenImg) {
-                fullscreenImg.src = semuaFotoDrawer[fotoAktifIndex];
-            }
-
-            const currentThumbs = document.getElementById('d-thumbnail-container').querySelectorAll('img');
-            currentThumbs.forEach((t, idx) => {
-                if (idx === fotoAktifIndex) {
-                    t.classList.add('border-indigo-500', 'scale-105');
-                    t.classList.remove('border-slate-800');
-                } else {
-                    t.classList.remove('border-indigo-500', 'scale-105');
-                    t.classList.add('border-slate-800');
-                }
-            });
+            if (fullscreenImg) fullscreenImg.src = semuaFotoDrawer[fotoAktifIndex];
         }
 
         function geserFotoPreview(arah) {
@@ -311,14 +299,32 @@
             currentItem = produk; semuaFotoDrawer = dapatkanSemuaGambar(produk.gambar); fotoAktifIndex = 0;
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[0];
             
+            // LOGIKA DINAMIS GANTI TEKS BERDASARKAN KATEGORI GAME
+            const gameType = produk.game.toUpperCase();
+            if (gameType === 'FF' || gameType === 'FREE FIRE') {
+                document.getElementById('lbl-nick').innerText = "Nick (FF):";
+                document.getElementById('lbl-skin').innerText = "Bundle/Evo Gun:";
+                document.getElementById('lbl-login').innerText = "Sistem Login:";
+                document.getElementById('lbl-wr').innerText = "Level Akun:";
+            } else if (gameType === 'ML' || gameType === 'MLBB' || gameType === 'MOBILE LEGENDS') {
+                document.getElementById('lbl-nick').innerText = "Nick (MLBB):";
+                document.getElementById('lbl-skin').innerText = "Total Skin:";
+                document.getElementById('lbl-login').innerText = "Sistem Login:";
+                document.getElementById('lbl-wr').innerText = "Win Rate (WR):";
+            } else {
+                // Default jika game lain (Valorant, PUBG, dll)
+                document.getElementById('lbl-nick').innerText = "Nickname:";
+                document.getElementById('lbl-skin').innerText = "Skin Koleksi:";
+                document.getElementById('lbl-login').innerText = "Login Via:";
+                document.getElementById('lbl-wr').innerText = "Stat/Rank:";
+            }
+
             const thumbContainer = document.getElementById('d-thumbnail-container');
             thumbContainer.innerHTML = '';
             if(semuaFotoDrawer.length > 1) {
                 thumbContainer.classList.remove('hidden');
                 semuaFotoDrawer.forEach((foto, idx) => {
-                    const thumb = document.createElement('img'); 
-                    thumb.src = foto; 
-                    thumb.className = `w-12 h-12 object-cover rounded-lg border cursor-pointer shrink-0 transition-all ${idx === 0 ? 'border-indigo-500 scale-105' : 'border-slate-800'}`;
+                    const thumb = document.createElement('img'); thumb.src = foto; thumb.className = "w-12 h-12 object-cover rounded-lg border cursor-pointer shrink-0 transition-all border-slate-800";
                     thumb.onclick = (e) => { e.stopPropagation(); updateTampilanFotoDrawer(idx); }; 
                     thumbContainer.appendChild(thumb);
                 });
@@ -406,13 +412,9 @@
     var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
     var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/6a5833fc03ec7a1d4cd01f5b/1jtk8m5je';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
+    s1.async=true; s1.src='https://embed.tawk.to/6a5833fc03ec7a1d4cd01f5b/1jtk8m5je'; s1.charset='UTF-8'; s1.setAttribute('crossorigin','*');
     s0.parentNode.insertBefore(s1,s0);
     })();
     </script>
-    <!-- End of Tawk.to Script -->
 </body>
 </html>
