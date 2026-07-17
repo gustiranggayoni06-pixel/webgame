@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ranzz Store — Premium Gaming Station</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -180,7 +180,7 @@
                 <p class="text-[10px] text-indigo-400 font-extrabold uppercase">Tujuan Pembayaran:</p>
                 <p class="text-white font-bold flex justify-between"><span>Metode:</span> <span id="ewallet-name">QRIS</span></p>
                 <p id="ewallet-target-row" class="text-white font-bold flex justify-between hidden"><span>No E-Wallet Admin:</span> <span class="text-cyan-400 font-extrabold">083157363740</span></p>
-                <p id="ewallet-note" class="text-slate-400 text-[10px] mt-1 italic">*Pembayaran QRIS akan otomatis diproses setelah scan barcode sukses.</p>
+                <p id="ewallet-note" class="text-slate-400 text-[10px] mt-1 italic">*Pembayaran QRIS akan otomatis diproses setelah scan barcode sukses via gateway Pakasir.</p>
             </div>
 
             <button onclick="prosesCheckout()" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 font-extrabold text-xs py-4 rounded-xl transition shadow-lg">BAYAR SEKARANG</button>
@@ -358,7 +358,6 @@
             document.getElementById('ewallet-name').innerText = m.toUpperCase();
 
             const targetRow = document.getElementById('ewallet-target-row');
-            const noteText = document.getElementById('note-text');
 
             if (m === 'qris') {
                 targetRow.classList.add('hidden');
@@ -388,10 +387,8 @@
                 await supabaseClient.from('orders').insert([{ order_id: orderId, nama_akun: currentItem.nama, harga: currentItem.harga, status: 'Pending ('+metode.toUpperCase()+')', wa_pembeli: phone }]);
                 
                 if (metode === 'qris') {
-                    // JIKA QRIS -> LARI KE GERBANG PEMBAYARAN PAKASIR AUTOMATION
                     window.location.href = `https://app.pakasir.com/pay/${GATEWAY_SLUG}/${currentItem.harga}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/'+WA_ADMIN_TAMPILAN+'?text='+encodeURIComponent(txt))}`;
                 } else {
-                    // JIKA DANA & GOPAY -> MANUAL TRANSFER DIRECT WHATSAPP ADMIN
                     window.location.href = `https://wa.me/${WA_ADMIN_TAMPILAN}?text=${encodeURIComponent(txt)}`;
                 }
             } catch(e) { alert(e.message); }
@@ -440,5 +437,6 @@
     s0.parentNode.insertBefore(s1,s0);
     })();
     </script>
+    <!-- End of Tawk.to Script -->
 </body>
 </html>
