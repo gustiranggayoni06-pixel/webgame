@@ -40,7 +40,7 @@
         <!-- RUNNING TEXT -->
         <div class="bg-indigo-950/40 border-b border-slate-800/60 py-1.5 px-3 text-[10px] text-indigo-300 overflow-hidden whitespace-nowrap">
             <div class="inline-block animate-[marquee_20s_linear_infinite] hover:pause">
-                🔥 Selamat datang di Ranzz Store! Tempat transaksi jualan & rental akun game premium terpercaya. Proses kilat dan aman! 🔥
+                🔥 Selamat datang di Ranzz Store! Transaksi aman, instan, dan terpercaya untuk Jual & Rental Akun Game Premium! 🔥
             </div>
         </div>
         <style>@keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }</style>
@@ -51,12 +51,18 @@
             <!-- HERO BANNER -->
             <div class="bg-gradient-to-br from-indigo-900/60 via-slate-900 to-cyan-900/40 p-5 rounded-2xl border border-indigo-500/20 relative overflow-hidden shadow-lg shadow-indigo-500/5">
                 <span class="text-[8px] font-extrabold text-cyan-400 uppercase tracking-widest bg-cyan-400/10 px-2 py-0.5 rounded">⚡ Premium Station</span>
-                <h2 class="text-base font-extrabold text-white mt-2 leading-tight">Beli atau Rental Akun <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Harga Termurah Di Sini!</span></h2>
+                <h2 class="text-base font-extrabold text-white mt-2 leading-tight">Cari Akun Jual & Rental <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Harga Termurah Di Sini!</span></h2>
                 <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-800/60 text-center">
                     <div><p class="text-xs font-black text-white">1k+</p><p class="text-[8px] text-slate-500 uppercase font-bold">Terjual</p></div>
                     <div><p class="text-xs font-black text-white">4.9★</p><p class="text-[8px] text-slate-500 uppercase font-bold">Rating</p></div>
                     <div><p class="text-xs font-black text-white">100%</p><p class="text-[8px] text-slate-500 uppercase font-bold">Trusted</p></div>
                 </div>
+            </div>
+
+            <!-- REVISI FITUR: SELEKTOR PEMBEDA UTAMA (JUAL VS RENTAL) -->
+            <div class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 grid grid-cols-2 gap-1 text-center">
+                <button id="nav-mode-jual" onclick="ubahSistemModeKatalog('jual')" class="py-2.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-md">🛒 KATALOG JUAL</button>
+                <button id="nav-mode-rental" onclick="ubahSistemModeKatalog('rental')" class="py-2.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">⏳ KATALOG RENTAL</button>
             </div>
             
             <!-- Pencarian & Urutkan -->
@@ -77,7 +83,7 @@
 
             <!-- Grid Katalog Produk -->
             <div>
-                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-3">Rekomendasi Akun Ready:</p>
+                <p id="txt-label-katalog" class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-3">Rekomendasi Akun Ready:</p>
                 <div id="loading-spinner" class="text-center py-10 text-slate-500 text-xs animate-pulse">Menghubungkan ke server...</div>
                 <div id="katalog-grid" class="grid grid-cols-2 gap-3 hidden"></div>
                 <div id="katalog-kosong" class="hidden text-center text-slate-500 text-xs py-10">Produk tidak ditemukan.</div>
@@ -120,7 +126,7 @@
     <div id="checkout-drawer" class="fixed inset-0 bg-black/80 z-50 flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="w-full max-w-md bg-[#0d1527] rounded-t-2xl border-t border-slate-800 p-6 transform translate-y-full transition-transform duration-300 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center mb-4">
-                <span class="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest">Detail Produk & Pembelian</span>
+                <span id="d-header-layanan" class="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest">Detail Produk & Pembelian</span>
                 <button onclick="tutupDrawer()" class="p-1.5 bg-slate-900 rounded-lg text-slate-400 hover:text-white">✕</button>
             </div>
 
@@ -139,15 +145,6 @@
                 <div class="flex items-baseline gap-2 mt-1">
                     <span id="d-harga" class="text-sm font-extrabold text-cyan-400">Rp 0</span>
                     <span id="d-harga-rental-info" class="text-[10px] text-amber-400 font-bold hidden"></span>
-                </div>
-            </div>
-
-            <!-- TAB OPSI: BELI PERMANEN / RENTAL SEWA -->
-            <div class="mb-5">
-                <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase">Pilih Tipe Transaksi:</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <button id="btn-tipe-beli" onclick="setTipeTransaksi('beli')" class="p-3 rounded-xl border font-bold text-xs transition-all bg-indigo-600/20 border-indigo-500 text-indigo-400">🛒 Beli Permanen</button>
-                    <button id="btn-tipe-rental" onclick="setTipeTransaksi('rental')" class="p-3 rounded-xl border font-bold text-xs transition-all bg-slate-900 border-slate-800 text-slate-400">⏳ Rental / Sewa Akun</button>
                 </div>
             </div>
 
@@ -174,11 +171,11 @@
                     <input type="number" id="buyer-phone" placeholder="Contoh: 08123456789" class="w-full bg-slate-900 text-slate-100 text-xs p-3 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500">
                 </div>
 
-                <!-- FORM TAMBAHAN KHUSUS RENTAL (DIPICU SECARA OTOMATIS) -->
+                <!-- FORM VALIDASI DINAMIS KHUSUS RENTAL -->
                 <div id="form-tambahan-rental" class="space-y-3 hidden bg-slate-950/60 p-3.5 rounded-xl border border-amber-500/20">
                     <div>
-                        <label class="block text-[10px] font-bold text-amber-400 mb-1.5 uppercase">Email Aktif Anda:</label>
-                        <input type="email" id="buyer-email" placeholder="Contoh: nama@gmail.com" class="w-full bg-slate-900 text-slate-100 text-xs p-3 rounded-xl border border-slate-800 focus:outline-none focus:border-amber-500">
+                        <label class="block text-[10px] font-bold text-amber-400 mb-1.5 uppercase">Email Aktif Anda (Wajib Data Rental):</label>
+                        <input type="email" id="buyer-email" placeholder="Contoh: user@gmail.com" class="w-full bg-slate-900 text-slate-100 text-xs p-3 rounded-xl border border-slate-800 focus:outline-none focus:border-amber-500">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -224,7 +221,7 @@
         </div> 
     </div>
 
-    <!-- MODAL FULLSCREEN PREVIEW GAMBAR SLIDE + TOMBOL BACK/X -->
+    <!-- MODAL FULLSCREEN PREVIEW -->
     <div id="preview-image-modal" class="fixed inset-0 bg-black/95 z-[60] flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <button onclick="tutupPreviewFullscreen()" class="absolute top-6 right-6 z-50 bg-slate-900/80 hover:bg-slate-800 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg border border-slate-700 font-bold transition">✕</button>
         <div class="relative w-full max-w-2xl px-4 flex items-center justify-center h-[70vh]">
@@ -243,7 +240,9 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let database = [], ulasanDb = [], kategoriTerpilih = 'Semua', queryCari = '', currentItem = null, semuaFotoDrawer = [], fotoAktifIndex = 0;
-        let tipeTransaksiAktif = 'beli'; // default beli permanen
+        
+        // REVISI METODE VARIABEL PEMBEDA AKUN
+        let sistemModeKatalog = 'jual'; 
         let hargaFinalDihitung = 0;
 
         function dapatkanGambarUtama(g) { try { const p = JSON.parse(g); return Array.isArray(p) ? p[0] : g; } catch(e) { return g; } }
@@ -267,6 +266,25 @@
             } catch(e){}
         }
 
+        // FUNGSI GANTI SKEMA KATALOG JUAL / RENTAL
+        function ubahSistemModeKatalog(mode) {
+            sistemModeKatalog = mode;
+            const btnJual = document.getElementById('nav-mode-jual');
+            const btnRental = document.getElementById('nav-mode-rental');
+            const lblKatalog = document.getElementById('txt-label-katalog');
+
+            if (mode === 'jual') {
+                btnJual.className = "py-2.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-md";
+                btnRental.className = "py-2.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+                lblKatalog.innerText = "Rekomendasi Akun Ready (Jual):";
+            } else {
+                btnRental.className = "py-2.5 rounded-lg text-xs font-bold transition-all bg-amber-500 text-slate-950 shadow-md";
+                btnJual.className = "py-2.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+                lblKatalog.innerText = "Rekomendasi Akun Ready (Rental):";
+            }
+            jalankanFilter();
+        }
+
         function renderKategori() {
             const listGame = ['Semua', ...new Set(database.map(p => p.game))];
             const container = document.getElementById('kategori-container');
@@ -288,7 +306,22 @@
             queryCari = document.getElementById('search-input').value.toLowerCase();
             const sortVal = document.getElementById('sort-select').value;
 
-            let terfilter = database.filter(p => (kategoriTerpilih === 'Semua' || p.game === kategoriTerpilih) && (p.nama.toLowerCase().includes(queryCari) || p.spek.toLowerCase().includes(queryCari)));
+            // Memfilter database berdasarkan kategori game, pencarian teks, dan tipe layanan (Jual/Rental)
+            let terfilter = database.filter(p => {
+                const matchKategori = (kategoriTerpilih === 'Semua' || p.game === kategoriTerpilih);
+                const matchQuery = (p.nama.toLowerCase().includes(queryCari) || p.spek.toLowerCase().includes(queryCari));
+                
+                // Menentukan deteksi otomatis tipe akun berdasarkan isi nama/deskripsi produk dari admin
+                const dataNamaDeskripsi = (p.nama + " " + p.spek).toLowerCase();
+                const isRentalProduct = dataNamaDeskripsi.includes('rent') || dataNamaDeskripsi.includes('sewa');
+                
+                if (sistemModeKatalog === 'rental') {
+                    return matchKategori && matchQuery && isRentalProduct;
+                } else {
+                    return matchKategori && matchQuery && !isRentalProduct;
+                }
+            });
+
             if (sortVal === 'murah') terfilter.sort((a, b) => a.harga - b.harga);
             else if (sortVal === 'mahal') terfilter.sort((a, b) => b.harga - a.harga);
 
@@ -358,6 +391,29 @@
                 document.getElementById('lbl-wr').innerText = "Stat/Rank:";
             }
 
+            const formRental = document.getElementById('form-tambahan-rental');
+            const rentalInfoText = document.getElementById('d-harga-rental-info');
+            const headerLayanan = document.getElementById('d-header-layanan');
+
+            // MENYESUAIKAN FORM CHECKOUT DRAWER BERDASARKAN SYSTEM MODE AKTIF
+            if (sistemModeKatalog === 'jual') {
+                headerLayanan.innerText = "Detail Produk & Pembelian Akun";
+                headerLayanan.className = "text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest";
+                formRental.classList.add('hidden');
+                rentalInfoText.classList.add('hidden');
+                hargaFinalDihitung = produk.harga;
+                document.getElementById('d-harga').innerText = `Rp ${parseInt(hargaFinalDihitung).toLocaleString('id-ID')}`;
+            } else {
+                headerLayanan.innerText = "Detail Produk & Sewa Rental Akun";
+                headerLayanan.className = "text-[9px] text-amber-400 font-extrabold uppercase tracking-widest";
+                formRental.classList.remove('hidden');
+                rentalInfoText.classList.remove('hidden');
+                
+                const hariIni = new Date().toISOString().split('T')[0];
+                document.getElementById('rental-tanggal').value = hariIni;
+                hitungUlangHargaSewa();
+            }
+
             const thumbContainer = document.getElementById('d-thumbnail-container');
             thumbContainer.innerHTML = '';
             if(semuaFotoDrawer.length > 1) {
@@ -377,64 +433,30 @@
             document.getElementById('d-skin').innerText = produk.skin || '-';
             document.getElementById('d-login').innerText = produk.login || '-';
             document.getElementById('d-wr').innerText = produk.wr || '-';
-            
-            // Set default balik ke transaksi BELI permanen
-            setTipeTransaksi('beli');
             pilihMetode('qris');
 
             const drawer = document.getElementById('checkout-drawer');
             drawer.classList.remove('hidden'); setTimeout(() => { drawer.classList.remove('opacity-0'); drawer.querySelector('.transform').classList.remove('translate-y-full'); }, 10);
         }
 
-        // FUNGSI MENGATUR LAYOUT BERDASARKAN BELI / RENTAL
-        function setTipeTransaksi(tipe) {
-            tipeTransaksiAktif = tipe;
-            const btnBeli = document.getElementById('btn-tipe-beli');
-            const btnRental = document.getElementById('btn-tipe-rental');
-            const formRental = document.getElementById('form-tambahan-rental');
-            const rentalInfoText = document.getElementById('d-harga-rental-info');
-
-            if (tipe === 'beli') {
-                btnBeli.className = "p-3 rounded-xl border font-bold text-xs transition-all bg-indigo-600/20 border-indigo-500 text-indigo-400";
-                btnRental.className = "p-3 rounded-xl border font-bold text-xs transition-all bg-slate-900 border-slate-800 text-slate-400";
-                formRental.classList.add('hidden');
-                rentalInfoText.classList.add('hidden');
-                
-                hargaFinalDihitung = currentItem.harga;
-                document.getElementById('d-harga').innerText = `Rp ${parseInt(hargaFinalDihitung).toLocaleString('id-ID')}`;
-            } else {
-                btnRental.className = "p-3 rounded-xl border font-bold text-xs transition-all bg-amber-500/20 border-amber-500 text-amber-400";
-                btnBeli.className = "p-3 rounded-xl border font-bold text-xs transition-all bg-slate-900 border-slate-800 text-slate-400";
-                formRental.classList.remove('hidden');
-                rentalInfoText.classList.remove('hidden');
-                
-                // Ambil tanggal hari ini secara otomatis untuk form rental
-                const hariIni = new Date().toISOString().split('T')[0];
-                document.getElementById('rental-tanggal').value = hariIni;
-                
-                hitungUlangHargaSewa();
-            }
-        }
-
-        // LOGIKA PERHITUNGAN BIAYA RENTAL SECARA OTOMATIS
         function hitungUlangHargaSewa() {
-            if(tipeTransaksiAktif !== 'rental') return;
+            if(sistemModeKatalog !== 'rental') return;
             const durasi = parseInt(document.getElementById('rental-durasi').value);
             
-            // Contoh rumus biaya rental: 10% dari harga akun per hari
+            // Aturan tarif rental otomatis: 10% dari harga dasar akun utama per hari
             let tarifPerHari = Math.round(currentItem.harga * 0.10);
-            if(tarifPerHari < 10000) tarifPerHari = 10000; // Harga sewa minimal 10rb/hari
+            if(tarifPerHari < 10000) tarifPerHari = 10000; // Minimal batas tarif sewa terendah 10rb
             
             if (durasi === 1) {
                 hargaFinalDihitung = tarifPerHari;
             } else if (durasi === 3) {
-                hargaFinalDihitung = Math.round(tarifPerHari * 3 * 0.90); // Diskon sewa 3 hari 10%
+                hargaFinalDihitung = Math.round(tarifPerHari * 3 * 0.90); // Potongan diskon 10%
             } else if (durasi === 7) {
-                hargaFinalDihitung = Math.round(tarifPerHari * 7 * 0.80); // Diskon sewa 1 minggu 20%
+                hargaFinalDihitung = Math.round(tarifPerHari * 7 * 0.80); // Potongan diskon 20%
             }
 
             document.getElementById('d-harga').innerText = `Rp ${parseInt(hargaFinalDihitung).toLocaleString('id-ID')}`;
-            document.getElementById('d-harga-rental-info').innerText = `(Sewa ${durasi} Hari)`;
+            document.getElementById('d-harga-rental-info').innerText = `(Biaya Sewa ${durasi} Hari)`;
         }
 
         function tutupDrawer() {
@@ -453,7 +475,7 @@
 
             if (m === 'qris') {
                 targetRow.classList.add('hidden');
-                document.getElementById('ewallet-note').innerText = "*Pembayaran menggunakan QRIS akan otomatis divalidasi instan oleh sistem cloud.";
+                document.getElementById('ewallet-note').innerText = "*Pembayaran menggunakan QRIS divalidasi otomatis oleh sistem jaringan secure cloud cloud.";
             } else {
                 targetRow.classList.remove('hidden');
                 document.getElementById('ewallet-note').innerText = "*Silakan transfer manual ke nomor e-wallet di atas, lalu tekan BAYAR SEKARANG untuk konfirmasi ke WA Admin.";
@@ -468,31 +490,29 @@
 
             let email = "-", durasi = "-", tglMulai = "-";
             
-            // Validasi data tambahan khusus jika memilih skema RENTAL
-            if(tipeTransaksiAktif === 'rental') {
+            if(sistemModeKatalog === 'rental') {
                 email = document.getElementById('buyer-email').value.trim();
                 durasi = document.getElementById('rental-durasi').value;
                 tglMulai = document.getElementById('rental-tanggal').value;
                 
                 if(!email || !tglMulai) { 
-                    alert('Untuk menyewa/rental akun, data Email Aktif dan Tanggal Mulai wajib diisi lengkap!'); 
+                    alert('Data data Rental berupa Email Aktif dan Tanggal Mulai wajib diisi lengkap!'); 
                     return; 
                 }
             }
             
             const orderId = `RNZ-${Date.now().toString().slice(-6)}`;
             
-            // STRUKTUR TEXT WHATSAPP NOTIFIKASI
-            let txt = `*KONFIRMASI ORDER ${tipeTransaksiAktif.toUpperCase()}*\n\n` +
-                      `Halo Admin Ranzz Store, saya melakukan pemesanan sistem:\n\n` +
+            let txt = `*KONFIRMASI ORDER ${sistemModeKatalog.toUpperCase()}*\n\n` +
+                      `Halo Admin Ranzz Store, saya mengirimkan rincian pemesanan:\n\n` +
                       `🔖 *ID Transaksi:* ${orderId}\n` +
                       `📦 *Produk Akun:* ${currentItem.nama}\n` +
-                      `🕹️ *Tipe Layanan:* ${tipeTransaksiAktif.toUpperCase()}\n` +
+                      `🕹️ *Layanan:* ASSET ${sistemModeKatalog.toUpperCase()}\n` +
                       `💵 *Total Tagihan:* Rp ${parseInt(hargaFinalDihitung).toLocaleString('id-ID')}\n` +
                       `💳 *Metode:* ${metode.toUpperCase()}\n` +
                       `📞 *WA Pembeli:* ${phone}\n`;
                       
-            if(tipeTransaksiAktif === 'rental') {
+            if(sistemModeKatalog === 'rental') {
                 txt += `📧 *Email Aktif:* ${email}\n` +
                        `⏳ *Durasi Sewa:* ${durasi} Hari\n` +
                        `📅 *Mulai Sewa:* ${tglMulai}\n`;
@@ -500,20 +520,18 @@
             txt += `\nMohon segera diproses ya min!`;
 
             try {
-                // Simpan status pesanan log ke database Supabase orders
                 await supabaseClient.from('orders').insert([{ 
                     order_id: orderId, 
-                    nama_akun: `${currentItem.nama} (${tipeTransaksiAktif.toUpperCase()})`, 
+                    nama_akun: `${currentItem.nama} (${sistemModeKatalog.toUpperCase()})`, 
                     harga: hargaFinalDihitung, 
                     status: 'Pending ('+metode.toUpperCase()+')', 
                     wa_pembeli: phone 
                 }]);
                 
                 if (metode === 'qris') {
-                    // Gateway otomatis dijalankan tanpa memunculkan kata "Pakasir" di tampilan pengguna
+                    // Berjalan otomatis via Pakasir Gateway di belakang sistem tanpa tertera namanya di teks antarmuka
                     window.location.href = `https://app.pakasir.com/pay/${GATEWAY_SLUG}/${hargaFinalDihitung}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/'+WA_ADMIN_TAMPILAN+'?text='+encodeURIComponent(txt))}`;
                 } else {
-                    // Transfer manual via e-wallet admin
                     window.location.href = `https://wa.me/${WA_ADMIN_TAMPILAN}?text=${encodeURIComponent(txt)}`;
                 }
             } catch(e) { alert(e.message); }
