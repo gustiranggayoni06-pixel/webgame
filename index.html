@@ -59,7 +59,7 @@
                 </div>
             </div>
 
-            <!-- REVISI FITUR: SELEKTOR PEMBEDA UTAMA (JUAL VS RENTAL) -->
+            <!-- SELEKTOR PEMBEDA UTAMA (JUAL VS RENTAL) -->
             <div class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 grid grid-cols-2 gap-1 text-center">
                 <button id="nav-mode-jual" onclick="ubahSistemModeKatalog('jual')" class="py-2.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-md">🛒 KATALOG JUAL</button>
                 <button id="nav-mode-rental" onclick="ubahSistemModeKatalog('rental')" class="py-2.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">⏳ KATALOG RENTAL</button>
@@ -171,25 +171,26 @@
                     <input type="number" id="buyer-phone" placeholder="Contoh: 08123456789" class="w-full bg-slate-900 text-slate-100 text-xs p-3 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500">
                 </div>
 
-                <!-- FORM VALIDASI DINAMIS KHUSUS RENTAL -->
+                <!-- FORM VALIDASI DINAMIS KHUSUS RENTAL (DENGAN PILIHAN JAM & EXP) -->
                 <div id="form-tambahan-rental" class="space-y-3 hidden bg-slate-950/60 p-3.5 rounded-xl border border-amber-500/20">
                     <div>
-                        <label class="block text-[10px] font-bold text-amber-400 mb-1.5 uppercase">Email Aktif Anda (Wajib Data Rental):</label>
+                        <label class="block text-[10px] font-bold text-amber-400 mb-1.5 uppercase">Email Aktif Anda:</label>
                         <input type="email" id="buyer-email" placeholder="Contoh: user@gmail.com" class="w-full bg-slate-900 text-slate-100 text-xs p-3 rounded-xl border border-slate-800 focus:outline-none focus:border-amber-500">
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-amber-400 mb-1.5 uppercase">Durasi Sewa:</label>
-                            <select id="rental-durasi" onchange="hitungUlangHargaSewa()" class="w-full bg-slate-900 text-slate-100 text-xs p-3 rounded-xl border border-slate-800 focus:outline-none">
-                                <option value="1">1 Hari (24 Jam)</option>
-                                <option value="3">3 Hari</option>
-                                <option value="7">7 Hari (1 Minggu)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-amber-400 mb-1.5 uppercase">Mulai Tanggal:</label>
-                            <input type="date" id="rental-tanggal" class="w-full bg-slate-900 text-slate-100 text-xs p-3 rounded-xl border border-slate-800 focus:outline-none">
-                        </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-400 mb-1.5 uppercase">Pilih Durasi Sewa Akun (Per Jam / Hari):</label>
+                        <select id="rental-durasi" onchange="hitungUlangHargaSewa()" class="w-full bg-slate-900 text-slate-100 text-xs p-3 rounded-xl border border-slate-800 focus:outline-none">
+                            <option value="3h">3 Jam</option>
+                            <option value="6h">6 Jam</option>
+                            <option value="12h">12 Jam</option>
+                            <option value="1d">1 Hari (24 Jam)</option>
+                            <option value="3d">3 Hari</option>
+                            <option value="7d">7 Hari (1 Minggu)</option>
+                        </select>
+                    </div>
+                    <!-- LIVE ESTIMASI EXP / KEDALUWARSA SEWA -->
+                    <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[10px] text-amber-300">
+                        ⏳ Estimasi Expired Akun: <span id="lbl-estimasi-exp" class="font-bold text-white">-</span>
                     </div>
                 </div>
             </div>
@@ -241,9 +242,9 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let database = [], ulasanDb = [], kategoriTerpilih = 'Semua', queryCari = '', currentItem = null, semuaFotoDrawer = [], fotoAktifIndex = 0;
         
-        // REVISI METODE VARIABEL PEMBEDA AKUN
         let sistemModeKatalog = 'jual'; 
         let hargaFinalDihitung = 0;
+        let stringWaktuExpiredText = "";
 
         function dapatkanGambarUtama(g) { try { const p = JSON.parse(g); return Array.isArray(p) ? p[0] : g; } catch(e) { return g; } }
         function dapatkanSemuaGambar(g) { try { const p = JSON.parse(g); return Array.isArray(p) ? p : [g]; } catch(e) { return [g]; } }
@@ -266,7 +267,6 @@
             } catch(e){}
         }
 
-        // FUNGSI GANTI SKEMA KATALOG JUAL / RENTAL
         function ubahSistemModeKatalog(mode) {
             sistemModeKatalog = mode;
             const btnJual = document.getElementById('nav-mode-jual');
@@ -306,12 +306,10 @@
             queryCari = document.getElementById('search-input').value.toLowerCase();
             const sortVal = document.getElementById('sort-select').value;
 
-            // Memfilter database berdasarkan kategori game, pencarian teks, dan tipe layanan (Jual/Rental)
             let terfilter = database.filter(p => {
                 const matchKategori = (kategoriTerpilih === 'Semua' || p.game === kategoriTerpilih);
                 const matchQuery = (p.nama.toLowerCase().includes(queryCari) || p.spek.toLowerCase().includes(queryCari));
                 
-                // Menentukan deteksi otomatis tipe akun berdasarkan isi nama/deskripsi produk dari admin
                 const dataNamaDeskripsi = (p.nama + " " + p.spek).toLowerCase();
                 const isRentalProduct = dataNamaDeskripsi.includes('rent') || dataNamaDeskripsi.includes('sewa');
                 
@@ -346,8 +344,6 @@
         function updateTampilanFotoDrawer(index) {
             fotoAktifIndex = index;
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[fotoAktifIndex];
-            const fullscreenImg = document.getElementById('p-gambar-fullscreen');
-            if (fullscreenImg) fullscreenImg.src = semuaFotoDrawer[fotoAktifIndex];
         }
 
         function geserFotoPreview(arah) {
@@ -395,7 +391,6 @@
             const rentalInfoText = document.getElementById('d-harga-rental-info');
             const headerLayanan = document.getElementById('d-header-layanan');
 
-            // MENYESUAIKAN FORM CHECKOUT DRAWER BERDASARKAN SYSTEM MODE AKTIF
             if (sistemModeKatalog === 'jual') {
                 headerLayanan.innerText = "Detail Produk & Pembelian Akun";
                 headerLayanan.className = "text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest";
@@ -408,9 +403,7 @@
                 headerLayanan.className = "text-[9px] text-amber-400 font-extrabold uppercase tracking-widest";
                 formRental.classList.remove('hidden');
                 rentalInfoText.classList.remove('hidden');
-                
-                const hariIni = new Date().toISOString().split('T')[0];
-                document.getElementById('rental-tanggal').value = hariIni;
+                document.getElementById('rental-durasi').value = "3h";
                 hitungUlangHargaSewa();
             }
 
@@ -419,9 +412,7 @@
             if(semuaFotoDrawer.length > 1) {
                 thumbContainer.classList.remove('hidden');
                 semuaFotoDrawer.forEach((foto, idx) => {
-                    const thumb = document.createElement('img'); 
-                    thumb.src = foto; 
-                    thumb.className = `w-12 h-12 object-cover rounded-lg border cursor-pointer shrink-0 transition-all ${idx === 0 ? 'border-indigo-500 scale-105' : 'border-slate-800'}`;
+                    const thumb = document.createElement('img'); thumb.src = foto; thumb.className = `w-12 h-12 object-cover rounded-lg border cursor-pointer shrink-0 border-slate-800`;
                     thumb.onclick = (e) => { e.stopPropagation(); updateTampilanFotoDrawer(idx); }; 
                     thumbContainer.appendChild(thumb);
                 });
@@ -439,24 +430,52 @@
             drawer.classList.remove('hidden'); setTimeout(() => { drawer.classList.remove('opacity-0'); drawer.querySelector('.transform').classList.remove('translate-y-full'); }, 10);
         }
 
+        // PERHITUNGAN BIAYA SEWA DAN ESTIMASI WAKTU KEDALUWARSA (PER JAM / HARI)
         function hitungUlangHargaSewa() {
             if(sistemModeKatalog !== 'rental') return;
-            const durasi = parseInt(document.getElementById('rental-durasi').value);
+            const durasiKode = document.getElementById('rental-durasi').value;
             
-            // Aturan tarif rental otomatis: 10% dari harga dasar akun utama per hari
-            let tarifPerHari = Math.round(currentItem.harga * 0.10);
-            if(tarifPerHari < 10000) tarifPerHari = 10000; // Minimal batas tarif sewa terendah 10rb
-            
-            if (durasi === 1) {
-                hargaFinalDihitung = tarifPerHari;
-            } else if (durasi === 3) {
-                hargaFinalDihitung = Math.round(tarifPerHari * 3 * 0.90); // Potongan diskon 10%
-            } else if (durasi === 7) {
-                hargaFinalDihitung = Math.round(tarifPerHari * 7 * 0.80); // Potongan diskon 20%
+            // Tarif dasar rental per jam disesuaikan dari 1.5% harga dasar akun utama
+            let tarifPerJam = Math.round(currentItem.harga * 0.015);
+            if(tarifPerJam < 2000) tarifPerJam = 2000; // Minimal batas 2rb/jam
+
+            let labelDurasiTeks = "";
+            let tambahanWaktuMilidetik = 0;
+
+            if (durasiKode === "3h") {
+                hargaFinalDihitung = tarifPerJam * 3;
+                labelDurasiTeks = "3 Jam";
+                tambahanWaktuMilidetik = 3 * 60 * 60 * 1000;
+            } else if (durasiKode === "6h") {
+                hargaFinalDihitung = Math.round(tarifPerJam * 6 * 0.95); // Diskon 5%
+                labelDurasiTeks = "6 Jam";
+                tambahanWaktuMilidetik = 6 * 60 * 60 * 1000;
+            } else if (durasiKode === "12h") {
+                hargaFinalDihitung = Math.round(tarifPerJam * 12 * 0.90); // Diskon 10%
+                labelDurasiTeks = "12 Jam";
+                tambahanWaktuMilidetik = 12 * 60 * 60 * 1000;
+            } else if (durasiKode === "1d") {
+                hargaFinalDihitung = Math.round(tarifPerJam * 24 * 0.85); // Diskon 15%
+                labelDurasiTeks = "1 Hari (24 Jam)";
+                tambahanWaktuMilidetik = 24 * 60 * 60 * 1000;
+            } else if (durasiKode === "3d") {
+                hargaFinalDihitung = Math.round(tarifPerJam * 24 * 3 * 0.80); // Diskon 20%
+                labelDurasiTeks = "3 Hari";
+                tambahanWaktuMilidetik = 3 * 24 * 60 * 60 * 1000;
+            } else if (durasiKode === "7d") {
+                hargaFinalDihitung = Math.round(tarifPerJam * 24 * 7 * 0.75); // Diskon 25%
+                labelDurasiTeks = "7 Hari (1 Minggu)";
+                tambahanWaktuMilidetik = 7 * 24 * 60 * 60 * 1000;
             }
 
+            // Hitung Tanggal + Jam Expired Secara Realtime
+            const waktuSelesai = new Date(Date.now() + tambahanWaktuMilidetik);
+            const opsiFormat = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            stringWaktuExpiredText = waktuSelesai.toLocaleDateString('id-ID', opsiFormat) + " WIB";
+
             document.getElementById('d-harga').innerText = `Rp ${parseInt(hargaFinalDihitung).toLocaleString('id-ID')}`;
-            document.getElementById('d-harga-rental-info').innerText = `(Biaya Sewa ${durasi} Hari)`;
+            document.getElementById('d-harga-rental-info').innerText = `(Biaya Sewa ${labelDurasiTeks})`;
+            document.getElementById('lbl-estimasi-exp').innerText = stringWaktuExpiredText;
         }
 
         function tutupDrawer() {
@@ -472,10 +491,9 @@
             document.getElementById('ewallet-name').innerText = m.toUpperCase();
 
             const targetRow = document.getElementById('ewallet-target-row');
-
             if (m === 'qris') {
                 targetRow.classList.add('hidden');
-                document.getElementById('ewallet-note').innerText = "*Pembayaran menggunakan QRIS divalidasi otomatis oleh sistem jaringan secure cloud cloud.";
+                document.getElementById('ewallet-note').innerText = "*Pembayaran menggunakan QRIS divalidasi otomatis oleh sistem jaringan secure cloud.";
             } else {
                 targetRow.classList.remove('hidden');
                 document.getElementById('ewallet-note').innerText = "*Silakan transfer manual ke nomor e-wallet di atas, lalu tekan BAYAR SEKARANG untuk konfirmasi ke WA Admin.";
@@ -485,20 +503,13 @@
         async function prosesCheckout() {
             const phone = document.getElementById('buyer-phone').value.trim();
             const metode = document.querySelector('input[name="payment"]:checked').value;
-            
             if(!phone) { alert('Isi nomor WhatsApp Anda dahulu!'); return; }
 
-            let email = "-", durasi = "-", tglMulai = "-";
+            let email = "-", durasiTeksTombol = document.getElementById('rental-durasi').options[document.getElementById('rental-durasi').selectedIndex].text;
             
             if(sistemModeKatalog === 'rental') {
                 email = document.getElementById('buyer-email').value.trim();
-                durasi = document.getElementById('rental-durasi').value;
-                tglMulai = document.getElementById('rental-tanggal').value;
-                
-                if(!email || !tglMulai) { 
-                    alert('Data data Rental berupa Email Aktif dan Tanggal Mulai wajib diisi lengkap!'); 
-                    return; 
-                }
+                if(!email) { alert('Data Rental berupa Email Aktif wajib diisi lengkap!'); return; }
             }
             
             const orderId = `RNZ-${Date.now().toString().slice(-6)}`;
@@ -514,8 +525,8 @@
                       
             if(sistemModeKatalog === 'rental') {
                 txt += `📧 *Email Aktif:* ${email}\n` +
-                       `⏳ *Durasi Sewa:* ${durasi} Hari\n` +
-                       `📅 *Mulai Sewa:* ${tglMulai}\n`;
+                       `⏳ *Durasi Sewa:* ${durasiTeksTombol}\n` +
+                       `🚨 *WAKTU EXPIRED:* ${stringWaktuExpiredText}\n`;
             }
             txt += `\nMohon segera diproses ya min!`;
 
@@ -529,7 +540,6 @@
                 }]);
                 
                 if (metode === 'qris') {
-                    // Berjalan otomatis via Pakasir Gateway di belakang sistem tanpa tertera namanya di teks antarmuka
                     window.location.href = `https://app.pakasir.com/pay/${GATEWAY_SLUG}/${hargaFinalDihitung}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/'+WA_ADMIN_TAMPILAN+'?text='+encodeURIComponent(txt))}`;
                 } else {
                     window.location.href = `https://wa.me/${WA_ADMIN_TAMPILAN}?text=${encodeURIComponent(txt)}`;
