@@ -22,72 +22,72 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="antialiased min-h-screen">
+<body class="antialiased min-h-screen pb-20">
 
     <!-- ========================================== -->
-    <!-- KONTEN UTAMA WEBSITE (YANG SEBELUMNYA HILANG) -->
+    <!-- WADAH UTAMA WEBSITE (KATALOG & HEADER)     -->
     <!-- ========================================== -->
-    <div class="max-w-md mx-auto bg-[#0d1527] min-h-screen shadow-2xl flex flex-col relative pb-28 border-x border-slate-900">
+    <div class="max-w-md mx-auto bg-[#0d1527] min-h-screen border-x border-slate-900 shadow-2xl relative flex flex-col">
         
         <!-- HEADER -->
-        <header class="p-4 border-b border-slate-800 bg-[#0d1527]/90 backdrop-blur-md sticky top-0 z-30">
+        <header class="sticky top-0 bg-[#0d1527]/95 backdrop-blur-md border-b border-slate-800 p-4 z-30">
             <h1 class="font-extrabold text-white text-center tracking-widest">RANZZ STORE</h1>
         </header>
 
-        <!-- MAIN LAYOUT -->
+        <!-- KONTEN -->
         <main class="p-4 space-y-6">
             
-            <!-- Pencarian & Filter -->
+            <!-- Pencarian & Urutkan -->
             <div class="flex gap-2">
-                <input type="text" id="search-input" oninput="jalankanFilter()" placeholder="Cari akun..." class="w-full p-3 bg-slate-900 rounded-xl text-white text-xs border border-slate-800 focus:outline-none focus:border-indigo-500">
-                <select id="sort-select" onchange="jalankanFilter()" class="p-3 bg-slate-900 rounded-xl text-white text-xs border border-slate-800 focus:outline-none">
+                <input type="text" id="search-input" oninput="jalankanFilter()" placeholder="Cari nama akun..." class="w-full p-3 bg-slate-900 rounded-xl text-white text-xs border border-slate-800 focus:outline-none focus:border-indigo-500">
+                <select id="sort-select" onchange="jalankanFilter()" class="p-3 bg-slate-900 rounded-xl text-white text-xs border border-slate-800 focus:outline-none focus:border-indigo-500">
                     <option value="terbaru">Terbaru</option>
                     <option value="murah">Termurah</option>
                     <option value="mahal">Termahal</option>
                 </select>
             </div>
 
-            <!-- Filter Kategori Game -->
-            <div id="kategori-container" class="flex gap-2 overflow-x-auto scrollbar-hide"></div>
+            <!-- Kategori Game -->
+            <div id="kategori-container" class="flex gap-2 overflow-x-auto scrollbar-hide pb-2"></div>
 
-            <!-- Grid Katalog Produk -->
+            <!-- Area Grid Produk -->
             <div>
                 <div id="loading-spinner" class="text-center py-10 text-slate-500 text-xs animate-pulse">Menghubungkan ke server...</div>
-                <div id="katalog-grid" class="grid grid-cols-2 gap-3"></div>
-                <div id="katalog-kosong" class="hidden text-center text-slate-500 text-xs py-10">Maaf, produk tidak ditemukan.</div>
+                <div id="katalog-grid" class="grid grid-cols-2 gap-3 hidden"></div>
+                <div id="katalog-kosong" class="hidden text-center text-slate-500 text-xs py-10">Produk tidak ditemukan.</div>
             </div>
 
-            <!-- Fitur Lacak Pesanan -->
-            <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
-                <h3 class="font-bold text-white mb-3 text-xs uppercase tracking-wider">Lacak Pesanan Anda</h3>
+            <!-- Area Lacak Pesanan -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 mt-6">
+                <h3 class="font-bold text-white mb-3 text-[10px] uppercase tracking-widest">Lacak Pesanan</h3>
                 <div class="flex gap-2 mb-2">
-                    <input type="text" id="order-id-track" placeholder="Contoh: RNZ-2024..." class="w-full p-3 bg-slate-950 rounded-xl text-white text-xs border border-slate-800 focus:outline-none">
-                    <button onclick="lacakPesanan()" class="bg-indigo-600 hover:bg-indigo-500 px-4 rounded-xl text-white font-bold text-xs transition">Cari</button>
+                    <input type="text" id="order-id-track" placeholder="Masukkan ID Pesanan" class="w-full p-3 bg-slate-950 rounded-lg text-white text-xs border border-slate-800 focus:outline-none">
+                    <button onclick="lacakPesanan()" class="bg-indigo-600 px-4 rounded-lg text-white font-bold text-xs hover:bg-indigo-500">Cari</button>
                 </div>
-                <div id="hasil-lacak" class="hidden text-xs bg-slate-950 p-3 rounded-xl border border-slate-800"></div>
+                <div id="hasil-lacak" class="hidden text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 mt-2"></div>
             </div>
 
-            <!-- Area Ulasan Pembeli -->
-            <div>
-                <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                    <h3 class="font-bold text-white text-xs uppercase tracking-wider">Ulasan Pembeli</h3>
-                    <button onclick="toggleFormUlasan()" class="text-[10px] bg-slate-800 px-2 py-1 rounded text-cyan-400 font-bold hover:bg-slate-700">Tulis Ulasan</button>
+            <!-- Area Ulasan -->
+            <div class="mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-white text-[10px] uppercase tracking-widest">Ulasan Pembeli</h3>
+                    <button onclick="toggleFormUlasan()" class="text-[9px] bg-slate-800 px-2 py-1 rounded text-cyan-400 hover:bg-slate-700">Tulis Ulasan</button>
                 </div>
                 
-                <!-- Form Ulasan (Hidden by default) -->
                 <div id="form-ulasan-container" class="hidden bg-slate-900/80 p-4 rounded-xl border border-slate-800 mb-4 space-y-3">
-                    <input type="text" id="rev-nama" placeholder="Nama Anda" class="w-full p-3 bg-slate-950 rounded-xl text-white text-xs border border-slate-800 focus:outline-none">
-                    <select id="rev-bintang" class="w-full p-3 bg-slate-950 rounded-xl text-white text-xs border border-slate-800 focus:outline-none">
+                    <input type="text" id="rev-nama" placeholder="Nama Anda" class="w-full p-3 bg-slate-950 rounded-lg text-white text-xs border border-slate-800 focus:outline-none">
+                    <select id="rev-bintang" class="w-full p-3 bg-slate-950 rounded-lg text-white text-xs border border-slate-800 focus:outline-none">
                         <option value="5">⭐⭐⭐⭐⭐ (Sangat Puas)</option>
                         <option value="4">⭐⭐⭐⭐ (Puas)</option>
                         <option value="3">⭐⭐⭐ (Cukup)</option>
                     </select>
-                    <textarea id="rev-pesan" placeholder="Komentar Anda tentang Ranzz Store..." rows="2" class="w-full p-3 bg-slate-950 rounded-xl text-white text-xs border border-slate-800 focus:outline-none"></textarea>
-                    <button onclick="kirimUlasan()" class="w-full bg-emerald-500 hover:bg-emerald-400 py-3 rounded-xl text-slate-950 font-bold text-xs transition">KIRIM ULASAN</button>
+                    <textarea id="rev-pesan" placeholder="Komentar Anda..." rows="2" class="w-full p-3 bg-slate-950 rounded-lg text-white text-xs border border-slate-800 focus:outline-none"></textarea>
+                    <button onclick="kirimUlasan()" class="w-full bg-emerald-500 hover:bg-emerald-400 py-3 rounded-lg text-slate-950 font-bold text-xs">Kirim</button>
                 </div>
 
                 <div id="ulasan-list" class="space-y-3"></div>
             </div>
+
         </main>
     </div>
 
@@ -95,11 +95,10 @@
     <!-- DETAIL & CHECKOUT DRAWER (MODAL)           -->
     <!-- ========================================== -->
     <div id="checkout-drawer" class="fixed inset-0 bg-black/80 z-50 flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="w-full max-w-md bg-[#0d1527] rounded-t-2xl border-t border-slate-800 p-6 transform translate-y-full transition-transform duration-300 shadow-2xl overflow-y-auto max-h-[90vh] space-y-4">
+        <div class="w-full max-w-md bg-[#0d1527] rounded-t-2xl border-t border-slate-800 p-6 transform translate-y-full transition-transform duration-300 shadow-2xl overflow-y-auto max-h-[90vh]">
             
-            <!-- Header Modal -->
             <div class="flex justify-between items-center mb-4">
-                <span class="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest">Detail & Pembelian</span>
+                <span class="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest">Detail Produk</span>
                 <button onclick="tutupDrawer()" class="p-1.5 bg-slate-900 rounded-lg text-slate-400 hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -107,67 +106,63 @@
                 </button>
             </div>
 
-            <!-- Detail Gambar & Carousel -->
             <div class="relative w-full mb-4">
-                <div class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 group flex items-center justify-center">
-                    <button id="btn-prev-foto" onclick="geserFoto(-1)" class="absolute left-2 z-10 p-2 bg-black/60 text-white rounded-full hidden hover:bg-black/80 transition">&#10094;</button>
+                <div class="relative h-48 w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
+                    <button id="btn-prev-foto" onclick="geserFoto(-1)" class="absolute left-2 p-2 bg-black/50 text-white rounded-full hidden z-10">&#10094;</button>
                     <img id="d-gambar-utama" src="" class="w-full h-full object-cover">
-                    <button id="btn-next-foto" onclick="geserFoto(1)" class="absolute right-2 z-10 p-2 bg-black/60 text-white rounded-full hidden hover:bg-black/80 transition">&#10095;</button>
+                    <button id="btn-next-foto" onclick="geserFoto(1)" class="absolute right-2 p-2 bg-black/50 text-white rounded-full hidden z-10">&#10095;</button>
                 </div>
-                <div id="d-thumbnail-container" class="flex gap-2 mt-3 overflow-x-auto scrollbar-hide hidden"></div>
+                <div id="d-thumbnail-container" class="flex gap-2 mt-2 overflow-x-auto scrollbar-hide hidden"></div>
             </div>
 
             <div class="flex flex-col mb-4">
-                <h4 id="d-nama" class="font-bold text-sm text-white truncate">Nama Akun</h4>
-                <p id="d-spek" class="text-[10px] text-slate-400 mt-0.5 truncate">Spesifikasi Utama</p>
+                <h4 id="d-nama" class="font-bold text-sm text-white">Nama Akun</h4>
+                <p id="d-spek" class="text-[10px] text-slate-400 mt-0.5">Spesifikasi Utama</p>
                 <span id="d-harga" class="text-sm font-extrabold text-cyan-400 mt-1">Rp 0</span>
             </div>
 
-            <!-- Info Detail Spesifik Akun -->
+            <!-- Elemen Info Tambahan (Wajib ada agar JS tidak Error) -->
             <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 mb-5">
-                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between"><span>Nick:</span> <span id="d-nick" class="font-bold text-white truncate max-w-[60%]"></span></div>
-                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between"><span>Skin:</span> <span id="d-skin" class="font-bold text-white"></span></div>
-                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between"><span>Login:</span> <span id="d-login" class="font-bold text-white"></span></div>
-                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between"><span>WR:</span> <span id="d-wr" class="font-bold text-white"></span></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between"><span>Nick:</span> <span id="d-nick" class="font-bold text-white"></span></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between"><span>Skin:</span> <span id="d-skin" class="font-bold text-white"></span></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between"><span>Login:</span> <span id="d-login" class="font-bold text-white"></span></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between"><span>WR:</span> <span id="d-wr" class="font-bold text-white"></span></div>
             </div>
 
-            <!-- INPUT NOMOR WHATSAPP -->
             <div class="mb-5">
                 <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase">Nomor WhatsApp Aktif:</label>
                 <input type="number" id="buyer-phone" placeholder="Contoh: 08123456789" class="w-full bg-slate-900 text-slate-100 text-xs px-3.5 py-3.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500">
             </div>
 
-            <!-- OPSI PEMBAYARAN -->
             <div class="mb-5">
                 <h4 class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Pilih Metode Pembayaran:</h4>
                 <div class="space-y-2">
                     <label id="label-qris" onclick="pilihMetode('qris')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-indigo-500 cursor-pointer transition-all">
                         <input type="radio" name="payment" value="qris" checked class="hidden">
-                        <span class="ml-3 text-xs text-white font-bold">QRIS (Otomatis)</span>
+                        <span class="ml-3 text-xs text-white font-bold">QRIS (Otomatis via Pakasir)</span>
                     </label>
                     <label id="label-dana" onclick="pilihMetode('dana')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition-all">
                         <input type="radio" name="payment" value="dana" class="hidden">
-                        <div class="ml-3"><p class="text-xs text-white font-bold">DANA</p></div>
+                        <span class="ml-3 text-xs text-white font-bold">DANA (Manual via WA)</span>
                     </label>
                     <label id="label-gopay" onclick="pilihMetode('gopay')" class="flex items-center p-3 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition-all">
                         <input type="radio" name="payment" value="gopay" class="hidden">
-                        <div class="ml-3"><p class="text-xs text-white font-bold">GoPay</p></div>
+                        <span class="ml-3 text-xs text-white font-bold">GoPay (Manual via WA)</span>
                     </label>
                 </div>
             </div>
 
-            <!-- TOMBOL BAYAR SEKARANG -->
             <div class="mt-2 pb-6">
                 <button onclick="prosesCheckout()" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 hover:brightness-110 text-slate-950 font-extrabold text-xs py-4 rounded-xl transition shadow-lg shadow-indigo-500/10">
                     BAYAR SEKARANG
                 </button>
             </div>
             
-        </div>
-    </div> 
+        </div> 
+    </div>
 
     <!-- ========================================== -->
-    <!-- SCRIPT JAVASCRIPT & SUPABASE               -->
+    <!-- ENGINE JAVASCRIPT & SUPABASE               -->
     <!-- ========================================== -->
     <script>
         const SUPABASE_URL = 'https://edhonplddyebaeejwaco.supabase.co'; 
@@ -182,7 +177,6 @@
         let kategoriTerpilih = 'Semua';
         let queryCari = '';
         let currentItem = null;
-
         let semuaFotoDrawer = [];
         let fotoAktifIndex = 0;
 
@@ -208,11 +202,12 @@
                 if (error) throw error;
                 database = data;
                 document.getElementById('loading-spinner').classList.add('hidden');
+                document.getElementById('katalog-grid').classList.remove('hidden');
                 renderKategori();
                 jalankanFilter();
             } catch (err) {
-                console.error("Gagal sinkronisasi data produk:", err.message);
-                document.getElementById('loading-spinner').innerText = "Gagal memuat produk.";
+                console.error("Error:", err.message);
+                document.getElementById('loading-spinner').innerText = "Gagal memuat produk dari database.";
             }
         }
 
@@ -222,28 +217,21 @@
                 if (error) throw error;
                 ulasanDb = data;
                 renderUlasan();
-            } catch (err) {
-                console.error("Gagal sinkronisasi ulasan:", err.message);
-            }
+            } catch (err) { console.error("Error ulasan:", err.message); }
         }
 
         function renderKategori() {
             const listGame = ['Semua', ...new Set(database.map(p => p.game))];
             const container = document.getElementById('kategori-container');
             container.innerHTML = '';
-
             listGame.forEach(game => {
                 const aktif = game === kategoriTerpilih;
                 const btn = document.createElement('button');
-                btn.className = `px-4 py-2 rounded-xl border text-[10px] font-extrabold whitespace-nowrap transition-all ${
-                    aktif ? 'bg-indigo-500/20 border-indigo-500 text-indigo-400' : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-white'
+                btn.className = `px-3.5 py-1.5 rounded-lg border text-[10px] font-extrabold whitespace-nowrap transition ${
+                    aktif ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
                 }`;
-                btn.innerText = game === 'Semua' ? 'ALL GAME' : game;
-                btn.onclick = () => {
-                    kategoriTerpilih = game;
-                    renderKategori();
-                    jalankanFilter();
-                };
+                btn.innerText = game;
+                btn.onclick = () => { kategoriTerpilih = game; renderKategori(); jalankanFilter(); };
                 container.appendChild(btn);
             });
         }
@@ -252,7 +240,6 @@
             const container = document.getElementById('katalog-grid');
             const emptyEl = document.getElementById('katalog-kosong');
             container.innerHTML = '';
-
             queryCari = document.getElementById('search-input').value.toLowerCase();
             const sortVal = document.getElementById('sort-select').value;
 
@@ -268,9 +255,11 @@
 
             if (terfilter.length === 0) {
                 emptyEl.classList.remove('hidden');
+                container.classList.add('hidden');
                 return;
             } else {
                 emptyEl.classList.add('hidden');
+                container.classList.remove('hidden');
             }
 
             terfilter.forEach(p => {
@@ -305,16 +294,12 @@
         function updateTampilanFotoDrawer(index) {
             fotoAktifIndex = index;
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[fotoAktifIndex];
-            
-            const thumbContainer = document.getElementById('d-thumbnail-container');
-            const currentThumbs = thumbContainer.querySelectorAll('img');
+            const currentThumbs = document.getElementById('d-thumbnail-container').querySelectorAll('img');
             currentThumbs.forEach((t, idx) => {
                 if (idx === fotoAktifIndex) {
-                    t.classList.replace('border-slate-800', 'border-indigo-500');
-                    t.classList.add('scale-105');
+                    t.classList.replace('border-slate-800', 'border-indigo-500'); t.classList.add('scale-105');
                 } else {
-                    t.classList.replace('border-indigo-500', 'border-slate-800');
-                    t.classList.remove('scale-105');
+                    t.classList.replace('border-indigo-500', 'border-slate-800'); t.classList.remove('scale-105');
                 }
             });
         }
@@ -322,10 +307,8 @@
         function geserFoto(arah) {
             if (semuaFotoDrawer.length <= 1) return;
             let newIndex = fotoAktifIndex + arah;
-            
             if (newIndex < 0) newIndex = semuaFotoDrawer.length - 1;
             if (newIndex >= semuaFotoDrawer.length) newIndex = 0;
-            
             updateTampilanFotoDrawer(newIndex);
         }
 
@@ -335,37 +318,27 @@
             fotoAktifIndex = 0;
             
             document.getElementById('d-gambar-utama').src = semuaFotoDrawer[0];
-
             const btnPrev = document.getElementById('btn-prev-foto');
             const btnNext = document.getElementById('btn-next-foto');
             const thumbContainer = document.getElementById('d-thumbnail-container');
             thumbContainer.innerHTML = '';
             
             if(semuaFotoDrawer.length > 1) {
-                btnPrev.classList.remove('hidden');
-                btnNext.classList.remove('hidden');
-                thumbContainer.classList.remove('hidden');
-                
+                btnPrev.classList.remove('hidden'); btnNext.classList.remove('hidden'); thumbContainer.classList.remove('hidden');
                 semuaFotoDrawer.forEach((foto, index) => {
                     const thumb = document.createElement('img');
                     thumb.src = foto;
-                    thumb.className = `w-12 h-12 object-cover rounded-lg border cursor-pointer shrink-0 transition-all ${
-                        index === 0 ? 'border-indigo-500 scale-105' : 'border-slate-800'
-                    }`;
+                    thumb.className = `w-12 h-12 object-cover rounded-lg border cursor-pointer shrink-0 transition-all ${index === 0 ? 'border-indigo-500 scale-105' : 'border-slate-800'}`;
                     thumb.onclick = () => updateTampilanFotoDrawer(index);
                     thumbContainer.appendChild(thumb);
                 });
             } else {
-                btnPrev.classList.add('hidden');
-                btnNext.classList.add('hidden');
-                thumbContainer.classList.add('hidden');
+                btnPrev.classList.add('hidden'); btnNext.classList.add('hidden'); thumbContainer.classList.add('hidden');
             }
 
             document.getElementById('d-nama').innerText = produk.nama;
             document.getElementById('d-spek').innerText = produk.spek;
             document.getElementById('d-harga').innerText = `Rp ${parseInt(produk.harga).toLocaleString('id-ID')}`;
-            
-            // Masukkan data Nick, Skin, Login, WR (pastikan elemen ini ada di HTML Drawer)
             document.getElementById('d-nick').innerText = produk.nick || '-';
             document.getElementById('d-skin').innerText = produk.skin || '-';
             document.getElementById('d-login').innerText = produk.login || '-';
@@ -383,26 +356,16 @@
             const drawer = document.getElementById('checkout-drawer');
             drawer.classList.add('opacity-0');
             drawer.querySelector('.transform').classList.add('translate-y-full');
-            setTimeout(() => {
-                drawer.classList.add('hidden');
-                currentItem = null;
-            }, 300);
+            setTimeout(() => { drawer.classList.add('hidden'); currentItem = null; }, 300);
         }
 
         async function prosesCheckout() {
             const waBuyer = document.getElementById('buyer-phone').value.trim();
-            
             const radioMetode = document.querySelector('input[name="payment"]:checked');
-            if (!radioMetode) {
-                alert('Silakan pilih metode pembayaran terlebih dahulu!');
-                return;
-            }
-            const metode = radioMetode.value;
             
-            if (!waBuyer) {
-                alert('Silakan isi nomor WhatsApp Anda!');
-                return;
-            }
+            if (!radioMetode) { alert('Silakan pilih metode pembayaran terlebih dahulu!'); return; }
+            const metode = radioMetode.value;
+            if (!waBuyer) { alert('Silakan isi nomor WhatsApp Anda!'); return; }
 
             const d = new Date();
             const orderId = `RNZ-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -424,10 +387,12 @@
                 }]);
 
                 if (metode === 'qris') {
+                    // LOGIKA PAKASIR
                     const gatewayDomain = ['p','a','k','a','s','i','r'].join('');
-                    window.location.href = `https://app.${gatewayDomain}.com/pay/${GATEWAY_SLUG}/${currentItem.harga}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/6283157363740?text=' + encodeURIComponent(textWA))}`;
+                    window.location.href = `https://app.${gatewayDomain}.com/pay/${GATEWAY_SLUG}/${currentItem.harga}?order_id=${orderId}&qris_only=1&redirect=${encodeURIComponent('https://wa.me/' + WA_ADMIN_TAMPILAN + '?text=' + encodeURIComponent(textWA))}`;
                 } else {
-                    window.location.href = `https://wa.me/6283157363740?text=${encodeURIComponent(textWA)}`;
+                    // LOGIKA E-WALLET DANA & GOPAY -> LANGSUNG KE WA ADMIN 083157363740
+                    window.location.href = `https://wa.me/${WA_ADMIN_TAMPILAN}?text=${encodeURIComponent(textWA)}`;
                 }
             } catch (err) {
                 alert('Database error: ' + err.message);
@@ -437,37 +402,27 @@
         async function lacakPesanan() {
             const idInput = document.getElementById('order-id-track').value.trim();
             const output = document.getElementById('hasil-lacak');
-
-            if (!idInput) {
-                alert('Tolong isi ID Transaksi terlebih dahulu!');
-                return;
-            }
+            if (!idInput) { alert('Tolong isi ID Transaksi terlebih dahulu!'); return; }
 
             output.classList.remove('hidden');
-            output.innerHTML = `<p class="text-center text-slate-500 animate-pulse py-3">Mencari pesanan di Cloud...</p>`;
+            output.innerHTML = `<p class="text-center text-slate-500 animate-pulse py-2">Mencari pesanan...</p>`;
 
             try {
-                const { data, error } = await supabaseClient
-                    .from('orders')
-                    .select('*')
-                    .eq('order_id', idInput)
-                    .single();
-
+                const { data, error } = await supabaseClient.from('orders').select('*').eq('order_id', idInput).single();
                 if (error) throw error;
-
                 if (data) {
                     const formattedDate = new Date(data.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
                     output.innerHTML = `
                         <div class="space-y-1.5">
-                            <p class="font-bold text-white border-b border-slate-800 pb-1.5 text-[11px]">📦 ${data.nama_akun}</p>
+                            <p class="font-bold text-white border-b border-slate-800 pb-1.5">📦 ${data.nama_akun}</p>
                             <p class="flex justify-between"><span>Harga:</span> <span class="font-bold text-cyan-400">Rp ${parseInt(data.harga).toLocaleString('id-ID')}</span></p>
-                            <p class="flex justify-between"><span>Status:</span> <span class="text-amber-400 font-bold animate-pulse">${data.status}</span></p>
+                            <p class="flex justify-between"><span>Status:</span> <span class="text-amber-400 font-bold">${data.status}</span></p>
                             <p class="flex justify-between text-[10px] text-slate-500"><span>Tanggal:</span> <span>${formattedDate}</span></p>
                         </div>
                     `;
                 }
             } catch (err) {
-                output.innerHTML = `<span class="text-red-400">ID Pesanan "${idInput}" tidak ditemukan.</span>`;
+                output.innerHTML = `<span class="text-red-400">ID Pesanan tidak ditemukan.</span>`;
             }
         }
 
@@ -478,15 +433,11 @@
         function renderUlasan() {
             const container = document.getElementById('ulasan-list');
             container.innerHTML = '';
-
             ulasanDb.forEach(r => {
                 const card = document.createElement('div');
                 card.className = "bg-slate-900/40 border border-slate-800/60 p-3 rounded-xl text-xs space-y-1";
                 card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-white">${r.nama}</span>
-                        <span class="text-amber-400">★ ${r.bintang}.0</span>
-                    </div>
+                    <div class="flex justify-between items-center"><span class="font-bold text-white">${r.nama}</span><span class="text-amber-400">★ ${r.bintang}.0</span></div>
                     <p class="text-slate-400 text-[11px] leading-relaxed">${r.pesan}</p>
                 `;
                 container.appendChild(card);
@@ -497,29 +448,16 @@
             const nama = document.getElementById('rev-nama').value.trim();
             const bintang = parseInt(document.getElementById('rev-bintang').value);
             const pesan = document.getElementById('rev-pesan').value.trim();
-
-            if (!nama || !pesan) {
-                alert('Tolong lengkapi nama dan komentar ulasan!');
-                return;
-            }
-
+            if (!nama || !pesan) { alert('Tolong lengkapi nama dan komentar ulasan!'); return; }
             try {
                 const { error } = await supabaseClient.from('reviews').insert([{ nama, bintang, pesan }]);
                 if (error) throw error;
-                
-                document.getElementById('rev-nama').value = '';
-                document.getElementById('rev-pesan').value = '';
-                toggleFormUlasan();
-                fetchReviews();
-            } catch (err) {
-                alert('Gagal mengirim ulasan: ' + err.message);
-            }
+                document.getElementById('rev-nama').value = ''; document.getElementById('rev-pesan').value = '';
+                toggleFormUlasan(); fetchReviews();
+            } catch (err) { alert('Gagal mengirim ulasan: ' + err.message); }
         }
 
-        window.onload = () => {
-            fetchProducts();
-            fetchReviews();
-        }
+        window.onload = () => { fetchProducts(); fetchReviews(); }
 
         function pilihMetode(metode) {
             const labels = ['label-qris', 'label-dana', 'label-gopay'];
@@ -531,30 +469,28 @@
             document.getElementById('label-' + metode).classList.add('border-indigo-500');
             document.querySelector('input[value="' + metode + '"]').checked = true;
         }
-
     </script>
-  
-  <!-- TOMBOL WHATSAPP FLOATING HUBUNGI KAMI -->
-  <a href="https://wa.me/6283157363740?text=Halo%20Admin%20Ranzz%20Store%2C%20saya%20butuh%20bantuan%20terkait%20akun%20game." 
-     target="_blank" 
-     class="fixed bottom-6 right-6 z-40 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl p-3.5 shadow-xl shadow-emerald-500/20 transition-all hover:scale-105 flex items-center justify-center border border-emerald-400/40">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.5-5.739-1.446L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.965C16.528 1.977 14.06 Active 1.953 12.006 1.953c-5.448 0-9.876 4.373-9.88 9.803-.001 1.65.453 3.258 1.316 4.675l-1.01 3.693 3.793-.98c1.39.756 2.946 1.157 4.522 1.158zm10.744-7.44c-.287-.143-1.696-.838-1.959-.933-.262-.096-.452-.143-.642.143-.19.287-.735.933-.902 1.124-.166.19-.333.215-.62.071-.288-.143-1.215-.447-2.314-1.427-.855-.763-1.432-1.706-1.6-1.993-.167-.287-.018-.441.125-.583.129-.128.287-.335.43-.502.144-.167.192-.287.288-.479.095-.19.047-.359-.023-.502-.072-.143-.642-1.554-.879-2.129-.23-.556-.465-.48-.642-.48-.166-.003-.357-.004-.548-.004-.19 0-.5.072-.762.359-.262.287-1 .981-1 2.392s1.023 2.775 1.166 2.966c.143.19 2.014 3.076 4.88 4.317.682.296 1.214.474 1.63.607.687.218 1.312.187 1.807.114.551-.082 1.696-.694 1.935-1.365.238-.67.238-1.244.166-1.365-.071-.121-.262-.191-.548-.334z"/>
-      </svg>
-  </a>
 
-  <!--Start of Tawk.to Script-->
-  <script type="text/javascript">
-  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-  (function(){
-  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/6a5833fc03ec7a1d4cd01f5b/1jtk8m5je';
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0);
-  })();
-  </script>
-  <!--End of Tawk.to Script-->
+    <!-- TOMBOL WHATSAPP FLOATING HUBUNGI KAMI -->
+    <a href="https://wa.me/6283157363740?text=Halo%20Admin%20Ranzz%20Store%2C%20saya%20butuh%20bantuan%20terkait%20akun%20game." 
+       target="_blank" 
+       class="fixed bottom-6 right-6 z-40 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl p-3.5 shadow-xl shadow-emerald-500/20 transition-all hover:scale-105 flex items-center justify-center border border-emerald-400/40">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.5-5.739-1.446L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.965C16.528 1.977 14.06 Active 1.953 12.006 1.953c-5.448 0-9.876 4.373-9.88 9.803-.001 1.65.453 3.258 1.316 4.675l-1.01 3.693 3.793-.98c1.39.756 2.946 1.157 4.522 1.158zm10.744-7.44c-.287-.143-1.696-.838-1.959-.933-.262-.096-.452-.143-.642.143-.19.287-.735.933-.902 1.124-.166.19-.333.215-.62.071-.288-.143-1.215-.447-2.314-1.427-.855-.763-1.432-1.706-1.6-1.993-.167-.287-.018-.441.125-.583.129-.128.287-.335.43-.502.144-.167.192-.287.288-.479.095-.19.047-.359-.023-.502-.072-.143-.642-1.554-.879-2.129-.23-.556-.465-.48-.642-.48-.166-.003-.357-.004-.548-.004-.19 0-.5.072-.762.359-.262.287-1 .981-1 2.392s1.023 2.775 1.166 2.966c.143.19 2.014 3.076 4.88 4.317.682.296 1.214.474 1.63.607.687.218 1.312.187 1.807.114.551-.082 1.696-.694 1.935-1.365.238-.67.238-1.244.166-1.365-.071-.121-.262-.191-.548-.334z"/>
+        </svg>
+    </a>
+
+    <!-- Tawk.to Script -->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6a5833fc03ec7a1d4cd01f5b/1jtk8m5je';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
 </body>
 </html>
