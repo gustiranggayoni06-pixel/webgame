@@ -21,8 +21,8 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Memastikan kontainer widget eksternal Tawk.to tidak tersembunyi */
-        body .tawk-min-widget, body #tawk-container, .tawk-custom-color {
+        /* Memaksa elemen Tawk.to agar selalu tampil dan berada di lapisan paling depan */
+        body .tawk-min-widget, body #tawk-container, .tawk-custom-color, #tawk-chatinput-container {
             display: block !important;
             visibility: visible !important;
             z-index: 999999 !important;
@@ -258,7 +258,7 @@
         </div>
     </div>
 
-    <!-- FLOATING LIVE CHAT ICON (TERINTEGRASI KE TAWK.TO) -->
+    <!-- FLOATING LIVE CHAT ICON (TERINTEGRASI KHUSUS TAWK.TO SAJA) -->
     <button onclick="bukaTawkToChat()" class="fixed bottom-6 right-6 bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 p-3.5 rounded-full shadow-2xl z-[99999] hover:scale-110 transition flex items-center justify-center border border-indigo-400/30 group">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -280,12 +280,15 @@
         let hargaFinalDihitung = 0;
         let stringWaktuExpiredText = "";
 
-        // Fungsi pemicu jendela Tawk.to via script API
+        // Fungsi Membuka Tawk.to secara Agresif (Maksimalisasi Objek)
         function bukaTawkToChat() {
-            if (typeof Tawk_API !== 'undefined' && Tawk_API.toggle) {
-                Tawk_API.toggle();
+            if (typeof Tawk_API !== 'undefined' && Tawk_API.maximize) {
+                Tawk_API.maximize();
             } else {
-                alert("Sedang memuat server live chat, silakan coba sesaat lagi.");
+                // Mencoba memanggil ulang jika script terhambat antrean pemuatan awal
+                try {
+                    window.Tawk_API.maximize();
+                } catch(e) {}
             }
         }
 
