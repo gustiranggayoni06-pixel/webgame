@@ -46,10 +46,10 @@
                     <button id="btn-batal-edit" onclick="resetFormKeTambah()" class="hidden text-[10px] bg-slate-800 hover:bg-slate-700 text-red-400 font-bold px-3 py-1 rounded-lg border border-slate-700">Batal Edit</button>
                 </div>
                 
-                <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-4 text-[11px] text-amber-400 italic">
-                    💡 <b>Panduan Sistem Pengisian:</b> <br>
-                    • Jika ingin memasukkan ke <b>Katalog Jual</b>: Isi "Harga Jual Akun" dan <b>kosongkan</b> kotak "Harga Sewa / Jam".<br>
-                    • Jika ingin memasukkan ke <b>Katalog Rental</b>: Isi nominal pada kotak <b>"Harga Sewa / Jam"</b> sebagai tarif dasarnya.
+                <!-- PILIHAN TYPE MODE AKUN (JUAL VS RENTAL) -->
+                <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 grid grid-cols-2 gap-1 text-center mb-4 max-w-xs">
+                    <button type="button" id="form-mode-jual" onclick="setFormTypeMode('jual')" class="py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow">🛒 AKUN DIJUAL</button>
+                    <button type="button" id="form-mode-rental" onclick="setFormTypeMode('rental')" class="py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">⏳ AKUN RENTAL</button>
                 </div>
 
                 <form id="product-form" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -60,9 +60,9 @@
                         
                         <div><label class="block text-slate-400 mb-1 font-bold">Kategori Game (Ketik FF / MLBB / Bebas)</label><input type="text" id="p-game" required oninput="sesuaikanTeksFormAdmin(this.value)" placeholder="Contoh: FF / MLBB" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
                         
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="block text-slate-400 mb-1 font-bold">Harga Jual Akun</label><input type="number" id="p-harga" required placeholder="Contoh: 150000" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
-                            <div><label class="block text-amber-400 mb-1 font-bold">Harga Sewa / Jam</label><input type="number" id="p-harga-rental" placeholder="Contoh: 3000 (Kosongkan jika hanya dijual)" class="w-full p-3 bg-slate-900 border border-amber-900/60 rounded-xl text-white focus:outline-none focus:border-amber-500"></div>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div id="wrapper-input-harga"><label class="block text-slate-400 mb-1 font-bold">Harga Jual Akun</label><input type="number" id="p-harga" required placeholder="Contoh: 150000" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
+                            <div id="wrapper-input-rental" class="hidden"><label class="block text-amber-400 mb-1 font-bold">Harga Sewa / Jam</label><input type="number" id="p-harga-rental" placeholder="Contoh: 3000" class="w-full p-3 bg-slate-900 border border-amber-900/60 rounded-xl text-white focus:outline-none focus:border-amber-500"></div>
                         </div>
 
                         <div>
@@ -167,6 +167,41 @@
 
         let listSemuaProduk = [];
         let fotoLamaSaves = "";
+        let currentFormMode = 'jual';
+
+        // Fungsi pemutus visibilitas input form berdasarkan mode aktif
+        function setFormTypeMode(mode) {
+            currentFormMode = mode;
+            const btnJual = document.getElementById('form-mode-jual');
+            const btnRental = document.getElementById('form-mode-rental');
+            const wrapperHarga = document.getElementById('wrapper-input-harga');
+            const wrapperRental = document.getElementById('wrapper-input-rental');
+            
+            const inputHarga = document.getElementById('p-harga');
+            const inputRental = document.getElementById('p-harga-rental');
+
+            if (mode === 'jual') {
+                btnJual.className = "py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow";
+                btnRental.className = "py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+                
+                wrapperHarga.classList.remove('hidden');
+                wrapperRental.classList.add('hidden');
+                
+                inputHarga.required = true;
+                inputRental.required = false;
+                inputRental.value = "";
+            } else {
+                btnRental.className = "py-2 rounded-lg text-xs font-bold transition-all bg-amber-500 text-slate-950 shadow";
+                btnJual.className = "py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+                
+                wrapperRental.classList.remove('hidden');
+                wrapperHarga.classList.add('hidden');
+                
+                inputRental.required = true;
+                inputHarga.required = false;
+                inputHarga.value = "0"; // Default value untuk bypass schema database
+            }
+        }
 
         function sesuaikanTeksFormAdmin(nilaiInput) {
             const txt = nilaiInput.toUpperCase();
@@ -334,8 +369,16 @@
             document.getElementById('p-id').value = produk.id;
             document.getElementById('p-nama').value = produk.nama;
             document.getElementById('p-game').value = produk.game;
-            document.getElementById('p-harga').value = produk.harga;
-            document.getElementById('p-harga-rental').value = produk.harga_rental || '';
+            
+            const isRental = (produk.harga_rental !== null && produk.harga_rental > 0);
+            if(isRental) {
+                setFormTypeMode('rental');
+                document.getElementById('p-harga-rental').value = produk.harga_rental;
+            } else {
+                setFormTypeMode('jual');
+                document.getElementById('p-harga').value = produk.harga;
+            }
+
             document.getElementById('p-nick').value = produk.nick || '';
             document.getElementById('p-skin').value = produk.skin || '';
             document.getElementById('p-login').value = produk.login || '';
@@ -378,6 +421,7 @@
             fotoLamaSaves = "";
             document.getElementById('preview-foto-container').innerHTML = '';
             document.getElementById('form-title').innerText = "Tambah Akun Game Baru";
+            setFormTypeMode('jual');
             resetTombolSubmitStyle(false);
             document.getElementById('btn-batal-edit').classList.add('hidden');
             sesuaikanTeksFormAdmin("");
@@ -388,7 +432,7 @@
             return {
                 nama: document.getElementById('p-nama').value,
                 game: document.getElementById('p-game').value,
-                harga: parseInt(document.getElementById('p-harga').value),
+                harga: parseInt(document.getElementById('p-harga').value || 0),
                 harga_rental: hrgRental ? parseInt(hrgRental) : null,
                 nick: document.getElementById('p-nick').value,
                 skin: document.getElementById('p-skin').value,
