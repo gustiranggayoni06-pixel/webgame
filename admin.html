@@ -56,7 +56,7 @@
                     <div class="space-y-3">
                         <div><label class="block text-slate-400 mb-1 font-bold">Nama Judul Akun</label><input type="text" id="p-nama" required placeholder="Contoh: MLBB Spek Sultan atau MLBB Rental Per Jam" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
                         
-                        <div><label class="block text-slate-400 mb-1 font-bold">Kategori Game (Ketik FF / MLBB)</label><input type="text" id="p-game" required oninput="sesuaikanTeksFormAdmin(this.value)" placeholder="Contoh: FF / MLBB" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
+                        <div><label class="block text-slate-400 mb-1 font-bold">Kategori Game (Ketik FF / MLBB / Bebas)</label><input type="text" id="p-game" required oninput="sesuaikanTeksFormAdmin(this.value)" placeholder="Contoh: FF / MLBB" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
                         
                         <div class="grid grid-cols-2 gap-2">
                             <div><label class="block text-slate-400 mb-1 font-bold">Harga Jual Akun</label><input type="number" id="p-harga" required placeholder="Contoh: 150000" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
@@ -86,7 +86,7 @@
                     </div>
 
                     <div class="md:col-span-2 pt-2">
-                        <button type="submit" id="btn-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3.5 rounded-xl transition shadow-lg">UPLOAD KE CLOUD STORE</button>
+                        <button type="submit" id="btn-submit" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 font-extrabold py-3.5 rounded-xl transition shadow-lg">UPLOAD KE CLOUD STORE</button>
                     </div>
                 </form>
             </section>
@@ -146,22 +146,26 @@
         let listSemuaProduk = [];
         let fotoLamaSaves = "";
 
+        // Fungsi penyetaraan teks label agar persis dengan logic di index.html pembeli
         function sesuaikanTeksFormAdmin(nilaiInput) {
             const txt = nilaiInput.toUpperCase();
             if (txt === 'FF' || txt === 'FREE FIRE') {
-                document.getElementById('lbl-adm-nick').innerText = "Nickname (FF)";
-                document.getElementById('lbl-adm-skin').innerText = "Bundle & Evo Gun";
-                document.getElementById('lbl-adm-wr').innerText = "Level Akun (FF)";
+                document.getElementById('lbl-adm-nick').innerText = "Nick (FF):";
+                document.getElementById('lbl-adm-skin').innerText = "Bundle/Evo Gun:";
+                document.getElementById('lbl-adm-login').innerText = "Sistem Login:";
+                document.getElementById('lbl-adm-wr').innerText = "Level Akun:";
                 document.getElementById('p-wr').placeholder = "Contoh: Lvl 68";
             } else if (txt === 'ML' || txt === 'MLBB' || txt === 'MOBILE LEGENDS') {
-                document.getElementById('lbl-adm-nick').innerText = "Nickname (MLBB)";
-                document.getElementById('lbl-adm-skin').innerText = "Jumlah Skin";
-                document.getElementById('lbl-adm-wr').innerText = "Win Rate Akun (WR)";
+                document.getElementById('lbl-adm-nick').innerText = "Nick (MLBB):";
+                document.getElementById('lbl-adm-skin').innerText = "Total Skin:";
+                document.getElementById('lbl-adm-login').innerText = "Sistem Login:";
+                document.getElementById('lbl-adm-wr').innerText = "Win Rate (WR):";
                 document.getElementById('p-wr').placeholder = "Contoh: 62%";
             } else {
-                document.getElementById('lbl-adm-nick').innerText = "Nickname";
-                document.getElementById('lbl-adm-skin').innerText = "Skin Koleksi";
-                document.getElementById('lbl-adm-wr').innerText = "Stat / Win Rate (WR)";
+                document.getElementById('lbl-adm-nick').innerText = "Nickname:";
+                document.getElementById('lbl-adm-skin').innerText = "Skin Koleksi:";
+                document.getElementById('lbl-adm-login').innerText = "Login Via:";
+                document.getElementById('lbl-adm-wr').innerText = "Stat/Rank:";
                 document.getElementById('p-wr').placeholder = "Spesifikasi data bebas";
             }
         }
@@ -214,7 +218,7 @@
                 alert('Akun baru berhasil ditambahkan!');
                 resetFormKeTambah(); fetchKatalogProduk();
             } catch (err) { alert('Gagal: ' + err.message); }
-            finally { btnSubmit.disabled = false; btnSubmit.innerText = "UPLOAD KE CLOUD STORE"; }
+            finally { btnSubmit.disabled = false; resetTombolSubmitStyle(false); }
         }
 
         async function prosesUpdateAkun(id) {
@@ -263,7 +267,7 @@
                 data.forEach(p => {
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-slate-900/60 hover:bg-slate-900/40 text-xs text-white";
-                    const hrgtxt = p.harga_rental ? `Rp ${parseInt(p.harga_rental).toLocaleString('id-ID')}` : '-';
+                    const hrgtxt = (p.harga_rental !== null && p.harga_rental > 0) ? `Rp ${parseInt(p.harga_rental).toLocaleString('id-ID')}` : '-';
                     tr.innerHTML = `
                         <td class="p-3 font-bold">${p.nama}</td>
                         <td class="p-3 text-indigo-400 font-bold">${p.game}</td>
@@ -298,8 +302,7 @@
             sesuaikanTeksFormAdmin(produk.game);
 
             document.getElementById('form-title').innerText = "Edit Data Akun Game";
-            document.getElementById('btn-submit').innerText = "UPDATE DATA AKUN CLOUD";
-            document.getElementById('btn-submit').className = "w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-3.5 rounded-xl transition shadow-lg";
+            resetTombolSubmitStyle(true);
             document.getElementById('btn-batal-edit').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -314,14 +317,24 @@
             } catch (err) { alert('Gagal menghapus: ' + err.message); }
         }
 
+        function resetTombolSubmitStyle(isEditMode) {
+            const btn = document.getElementById('btn-submit');
+            if(isEditMode) {
+                btn.innerText = "UPDATE DATA AKUN CLOUD";
+                btn.className = "w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-3.5 rounded-xl transition shadow-lg";
+            } else {
+                btn.innerText = "UPLOAD KE CLOUD STORE";
+                btn.className = "w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 font-extrabold py-3.5 rounded-xl transition shadow-lg";
+            }
+        }
+
         function resetFormKeTambah() {
             document.getElementById('product-form').reset();
             document.getElementById('p-id').value = "";
             fotoLamaSaves = "";
             document.getElementById('preview-foto-container').innerHTML = '';
             document.getElementById('form-title').innerText = "Tambah Akun Game Baru";
-            document.getElementById('btn-submit').innerText = "UPLOAD KE CLOUD STORE";
-            document.getElementById('btn-submit').className = "w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3.5 rounded-xl transition shadow-lg";
+            resetTombolSubmitStyle(false);
             document.getElementById('btn-batal-edit').classList.add('hidden');
             sesuaikanTeksFormAdmin("");
         }
@@ -353,7 +366,7 @@
                         <td class="p-3 font-mono text-indigo-400 font-bold">${o.order_id}</td>
                         <td class="p-3 font-bold text-white">${o.nama_akun}</td>
                         <td class="p-3 text-cyan-400 font-extrabold">Rp ${parseInt(o.harga).toLocaleString('id-ID')}</td>
-                        <td class="p-3 font-mono">${o.wa_pembeli}</td>
+                        <td class="p-3 font-mono text-slate-300">${o.wa_pembeli}</td>
                         <td class="p-3 font-bold"><span class="px-2 py-0.5 rounded bg-slate-950 text-amber-400">${o.status}</span></td>
                         <td class="p-3 flex gap-2">
                             <button onclick="updateStatus('${o.order_id}', 'Sukses / Lunas')" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black px-2 py-1 rounded transition">Lunas</button>
