@@ -20,6 +20,13 @@
         body { background-color: #080c14; color: #f8fafc; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Memastikan Tawk.to tidak tertutup elemen gelap */
+        body .tawk-min-widget, body #tawk-container, .tawk-custom-color {
+            display: block !important;
+            visibility: visible !important;
+            z-index: 999999 !important;
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen pb-20">
@@ -48,15 +55,26 @@
         <!-- MAIN LAYOUT -->
         <main class="p-4 space-y-6">
 
-            <!-- HERO BANNER -->
+            <!-- HERO BANNER & FLASH SALE -->
             <div class="bg-gradient-to-br from-indigo-900/60 via-slate-900 to-cyan-900/40 p-5 rounded-2xl border border-indigo-500/20 relative overflow-hidden shadow-lg shadow-indigo-500/5">
-                <span class="text-[8px] font-extrabold text-cyan-400 uppercase tracking-widest bg-cyan-400/10 px-2 py-0.5 rounded">⚡ Premium Station</span>
+                <div class="flex justify-between items-center">
+                    <span class="text-[8px] font-extrabold text-cyan-400 uppercase tracking-widest bg-cyan-400/10 px-2 py-0.5 rounded">⚡ Premium Station</span>
+                    <!-- BARU: Live Countdown Flash Sale -->
+                    <span id="flash-sale-timer" class="text-[9px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded font-bold">Promo berakhir: 00:00:00</span>
+                </div>
                 <h2 class="text-base font-extrabold text-white mt-2 leading-tight">Cari Akun Jual & Rental <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Harga Termurah Di Sini!</span></h2>
                 <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-800/60 text-center">
                     <div><p class="text-xs font-black text-white">1k+</p><p class="text-[8px] text-slate-500 uppercase font-bold">Terjual</p></div>
                     <div><p class="text-xs font-black text-white">4.9★</p><p class="text-[8px] text-slate-500 uppercase font-bold">Rating</p></div>
                     <div><p class="text-xs font-black text-white">100%</p><p class="text-[8px] text-slate-500 uppercase font-bold">Trusted</p></div>
                 </div>
+            </div>
+
+            <!-- BARU: Keunggulan Layanan Badges -->
+            <div class="grid grid-cols-3 gap-2 text-center text-[9px] font-bold text-slate-400">
+                <div class="bg-slate-900/40 p-2 rounded-xl border border-slate-800/50">🛡️ Aman 100%</div>
+                <div class="bg-slate-900/40 p-2 rounded-xl border border-slate-800/50">⚡ Kirim Instan</div>
+                <div class="bg-slate-900/40 p-2 rounded-xl border border-slate-800/50">💰 Harga Miring</div>
             </div>
 
             <!-- SELEKTOR PEMBEDA UTAMA (JUAL VS RENTAL) -->
@@ -117,6 +135,15 @@
                     <button onclick="kirimUlasan()" class="w-full bg-indigo-500 py-3 rounded-lg text-white font-bold text-xs">Kirim Ulasan</button>
                 </div>
                 <div id="ulasan-list" class="space-y-3"></div>
+            </div>
+
+            <!-- BARU: Back-up Chat Admin (Jika Tawk.to terblokir ekstensi/AdBlock browser) -->
+            <div class="p-4 bg-emerald-950/20 border border-emerald-500/20 rounded-xl flex justify-between items-center">
+                <div class="space-y-0.5">
+                    <h4 class="text-xs font-bold text-emerald-400">Butuh Bantuan Cepat?</h4>
+                    <p class="text-[10px] text-slate-400">Hubungi kami via chat WhatsApp alternatif.</p>
+                </div>
+                <a href="https://wa.me/6283157363740?text=Halo%20Admin%20Ranzz%20Store,%20saya%20butuh%20bantuan%20terkait%20katalog..." target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] px-3 py-2 rounded-lg shadow transition flex items-center gap-1">💬 Chat WA</a>
             </div>
 
         </main>
@@ -245,6 +272,21 @@
         let sistemModeKatalog = 'jual'; 
         let hargaFinalDihitung = 0;
         let stringWaktuExpiredText = "";
+
+        // Fitur Tambahan: Timer Hitung Mundur Flash Sale Pajangan
+        function startCountdown() {
+            let duration = 3 * 60 * 60 + 45 * 60; // 3 Jam 45 Menit
+            setInterval(function () {
+                let hours = Math.floor(duration / 3600);
+                let minutes = Math.floor((duration % 3600) / 60);
+                let seconds = duration % 60;
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                document.getElementById("flash-sale-timer").innerText = "Promo berakhir: " + hours + ":" + minutes + ":" + seconds;
+                if (--duration < 0) duration = 3 * 60 * 60;
+            }, 1000);
+        }
 
         function dapatkanGambarUtama(g) { try { const p = JSON.parse(g); return Array.isArray(p) ? p[0] : g; } catch(e) { return g; } }
         function dapatkanSemuaGambar(g) { try { const p = JSON.parse(g); return Array.isArray(p) ? p : [g]; } catch(e) { return [g]; } }
@@ -571,7 +613,7 @@
             toggleFormUlasan(); fetchReviews();
         }
 
-        window.onload = () => { fetchProducts(); fetchReviews(); }
+        window.onload = () => { fetchProducts(); fetchReviews(); startCountdown(); }
     </script>
 
     <!-- Start of Tawk.to Script -->
