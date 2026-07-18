@@ -27,6 +27,8 @@
                 <p class="text-[10px] text-slate-500 uppercase mt-1">Console Cloud V3.7</p>
                 <nav class="mt-8 space-y-2">
                     <a href="#produk-section" class="block px-4 py-2.5 bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 rounded-xl font-bold text-xs">📦 Manajemen Akun</a>
+                    <a href="#tabel-jual-section" class="block px-4 py-2.5 bg-slate-900 border border-slate-800/80 text-slate-400 rounded-xl font-bold text-xs hover:border-slate-700 transition">🛒 Katalog Jual</a>
+                    <a href="#tabel-rental-section" class="block px-4 py-2.5 bg-slate-900 border border-slate-800/80 text-slate-400 rounded-xl font-bold text-xs hover:border-slate-700 transition">⏳ Katalog Rental</a>
                     <a href="#order-section" class="block px-4 py-2.5 bg-slate-900 border border-slate-800/80 text-slate-400 rounded-xl font-bold text-xs hover:border-slate-700 transition">💵 Transaksi Masuk</a>
                     <a href="https://whatsapp.com/channel/0029Vb6aiqD84OmJxmCm4z0j" target="_blank" class="block px-4 py-2.5 bg-emerald-950/20 border border-emerald-800/40 text-emerald-400 rounded-xl font-bold text-xs hover:bg-emerald-500 hover:text-slate-950 transition-all mt-4">📢 Pantau Saluran WA</a>
                 </nav>
@@ -91,9 +93,9 @@
                 </form>
             </section>
 
-            <!-- TABEL 1: KATALOG UTAMA UNTUK UPDATE & DELETE (CRUD) -->
-            <section class="bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-xl">
-                <h3 class="font-extrabold text-white text-sm uppercase tracking-wider mb-4 text-indigo-400">Daftar Akun Game di Katalog (CRUD)</h3>
+            <!-- TABEL 1A: KATALOG KHUSUS JUAL ACUN -->
+            <section id="tabel-jual-section" class="bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <h3 class="font-extrabold text-white text-sm uppercase tracking-wider mb-4 text-cyan-400">🛒 Daftar Katalog Akun Ready (Jual)</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-[11px] text-left text-slate-300">
                         <thead class="bg-slate-950 text-slate-400 uppercase text-[9px] tracking-wider border-b border-slate-800">
@@ -101,13 +103,33 @@
                                 <th class="p-3">Nama Akun</th>
                                 <th class="p-3">Game</th>
                                 <th class="p-3">Harga Jual</th>
+                                <th class="p-3">Login</th>
+                                <th class="p-3">Aksi Pengelolaan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-jual-table">
+                            <tr><td colspan="5" class="p-4 text-center text-slate-600 animate-pulse">Memuat katalog game jual...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TABEL 1B: KATALOG KHUSUS RENTAL ACUN -->
+            <section id="tabel-rental-section" class="bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <h3 class="font-extrabold text-white text-sm uppercase tracking-wider mb-4 text-amber-400">⏳ Daftar Katalog Akun Ready (Rental)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-[11px] text-left text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-[9px] tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Nama Akun</th>
+                                <th class="p-3">Game</th>
                                 <th class="p-3">Harga Sewa/Jam</th>
                                 <th class="p-3">Login</th>
                                 <th class="p-3">Aksi Pengelolaan</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-products-table">
-                            <tr><td colspan="6" class="p-4 text-center text-slate-600 animate-pulse">Memuat katalog game...</td></tr>
+                        <tbody id="admin-rental-table">
+                            <tr><td colspan="5" class="p-4 text-center text-slate-600 animate-pulse">Memuat katalog game rental...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -115,7 +137,7 @@
 
             <!-- TABEL 2: MANAJEMEN TRANSAKSI MASUK -->
             <section id="order-section" class="bg-[#0d1527] border border-slate-800 rounded-2xl p-6 shadow-xl">
-                <h3 class="font-extrabold text-white text-sm uppercase tracking-wider mb-4 text-cyan-400">Daftar Transaksi Masuk</h3>
+                <h3 class="font-extrabold text-white text-sm uppercase tracking-wider mb-4 text-indigo-400">💵 Daftar Transaksi Masuk</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-[11px] text-left text-slate-300">
                         <thead class="bg-slate-950 text-slate-400 uppercase text-[9px] tracking-wider border-b border-slate-800">
@@ -146,7 +168,6 @@
         let listSemuaProduk = [];
         let fotoLamaSaves = "";
 
-        // Fungsi penyetaraan teks label agar persis dengan logic di index.html pembeli
         function sesuaikanTeksFormAdmin(nilaiInput) {
             const txt = nilaiInput.toUpperCase();
             if (txt === 'FF' || txt === 'FREE FIRE') {
@@ -259,27 +280,50 @@
                 const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
                 listSemuaProduk = data;
-                const tbody = document.getElementById('admin-products-table');
-                tbody.innerHTML = '';
+                
+                const tbodyJual = document.getElementById('admin-jual-table');
+                const tbodyRental = document.getElementById('admin-rental-table');
+                
+                tbodyJual.innerHTML = '';
+                tbodyRental.innerHTML = '';
 
-                if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-600">Katalog kosong.</td></tr>'; return; }
+                let adaJual = false, adaRental = false;
 
                 data.forEach(p => {
+                    const isRental = (p.harga_rental !== null && p.harga_rental > 0);
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-slate-900/60 hover:bg-slate-900/40 text-xs text-white";
-                    const hrgtxt = (p.harga_rental !== null && p.harga_rental > 0) ? `Rp ${parseInt(p.harga_rental).toLocaleString('id-ID')}` : '-';
-                    tr.innerHTML = `
-                        <td class="p-3 font-bold">${p.nama}</td>
-                        <td class="p-3 text-indigo-400 font-bold">${p.game}</td>
-                        <td class="p-3 text-cyan-400 font-bold">Rp ${parseInt(p.harga).toLocaleString('id-ID')}</td>
-                        <td class="p-3 text-amber-400 font-bold">${hrgtxt}</td>
-                        <td class="p-3">${p.login || '-'}</td>
-                        <td class="p-3 flex gap-1">
-                            <button onclick="pemicuEditAkun('${p.id}')" class="bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded hover:bg-amber-400">Edit</button>
-                            <button onclick="prosesHapusAkun('${p.id}')" class="bg-red-600 text-white font-bold px-2 py-1 rounded hover:bg-red-500">Hapus</button>
-                        </td>`;
-                    tbody.appendChild(tr);
+
+                    if (!isRental) {
+                        adaJual = true;
+                        tr.innerHTML = `
+                            <td class="p-3 font-bold">${p.nama}</td>
+                            <td class="p-3 text-indigo-400 font-bold">${p.game}</td>
+                            <td class="p-3 text-cyan-400 font-bold">Rp ${parseInt(p.harga).toLocaleString('id-ID')}</td>
+                            <td class="p-3">${p.login || '-'}</td>
+                            <td class="p-3 flex gap-1">
+                                <button onclick="pemicuEditAkun('${p.id}')" class="bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded hover:bg-amber-400">Edit</button>
+                                <button onclick="prosesHapusAkun('${p.id}')" class="bg-red-600 text-white font-bold px-2 py-1 rounded hover:bg-red-500">Hapus</button>
+                            </td>`;
+                        tbodyJual.appendChild(tr);
+                    } else {
+                        adaRental = true;
+                        tr.innerHTML = `
+                            <td class="p-3 font-bold">${p.nama}</td>
+                            <td class="p-3 text-indigo-400 font-bold">${p.game}</td>
+                            <td class="p-3 text-amber-400 font-bold">Rp ${parseInt(p.harga_rental).toLocaleString('id-ID')} /Jam</td>
+                            <td class="p-3">${p.login || '-'}</td>
+                            <td class="p-3 flex gap-1">
+                                <button onclick="pemicuEditAkun('${p.id}')" class="bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded hover:bg-amber-400">Edit</button>
+                                <button onclick="prosesHapusAkun('${p.id}')" class="bg-red-600 text-white font-bold px-2 py-1 rounded hover:bg-red-500">Hapus</button>
+                            </td>`;
+                        tbodyRental.appendChild(tr);
+                    }
                 });
+
+                if (!adaJual) tbodyJual.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-600">Katalog akun jual kosong.</td></tr>';
+                if (!adaRental) tbodyRental.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-600">Katalog akun rental kosong.</td></tr>';
+
             } catch (err) { console.error(err); }
         }
 
