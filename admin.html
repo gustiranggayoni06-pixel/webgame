@@ -60,9 +60,21 @@
                         
                         <div><label class="block text-slate-400 mb-1 font-bold">Kategori Game (Ketik FF / MLBB / Bebas)</label><input type="text" id="p-game" required oninput="sesuaikanTeksFormAdmin(this.value)" placeholder="Contoh: FF / MLBB" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
                         
-                        <div class="grid grid-cols-1 gap-2">
-                            <div id="wrapper-input-harga"><label class="block text-slate-400 mb-1 font-bold">Harga Jual Akun</label><input type="number" id="p-harga" required placeholder="Contoh: 150000" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500"></div>
-                            <div id="wrapper-input-rental" class="hidden"><label class="block text-amber-400 mb-1 font-bold">Harga Sewa / Jam</label><input type="number" id="p-harga-rental" placeholder="Contoh: 3000" class="w-full p-3 bg-slate-900 border border-amber-900/60 rounded-xl text-white focus:outline-none focus:border-amber-500"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div id="wrapper-input-harga">
+                                <label class="block text-slate-400 mb-1 font-bold">Harga Normal Jual</label>
+                                <input type="number" id="p-harga" required placeholder="Contoh: 150000" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div id="wrapper-input-rental" class="hidden">
+                                <label class="block text-amber-400 mb-1 font-bold">Harga Normal Sewa / Jam</label>
+                                <input type="number" id="p-harga-rental" placeholder="Contoh: 3000" class="w-full p-3 bg-slate-900 border border-amber-900/60 rounded-xl text-white focus:outline-none focus:border-amber-500">
+                            </div>
+
+                            <!-- INPUT FITUR PROMO / HARGA PROMO (BERLAKU DI KEDUA MODE) -->
+                            <div id="wrapper-input-promo">
+                                <label id="lbl-harga-promo" class="block text-rose-400 mb-1 font-bold">🔥 Harga Promo (Opsional)</label>
+                                <input type="number" id="p-harga-promo" placeholder="Kosongkan jika tidak promo" class="w-full p-3 bg-slate-900 border border-rose-900/60 rounded-xl text-rose-200 focus:outline-none focus:border-rose-500">
+                            </div>
                         </div>
 
                         <div>
@@ -175,6 +187,7 @@
             const btnRental = document.getElementById('form-mode-rental');
             const wrapperHarga = document.getElementById('wrapper-input-harga');
             const wrapperRental = document.getElementById('wrapper-input-rental');
+            const lblPromo = document.getElementById('lbl-harga-promo');
             
             const inputHarga = document.getElementById('p-harga');
             const inputRental = document.getElementById('p-harga-rental');
@@ -186,6 +199,8 @@
                 wrapperHarga.classList.remove('hidden');
                 wrapperRental.classList.add('hidden');
                 
+                lblPromo.innerText = "🔥 Harga Promo Jual (Opsional)";
+                
                 inputHarga.required = true;
                 inputRental.required = false;
                 inputRental.value = "";
@@ -195,6 +210,8 @@
                 
                 wrapperRental.classList.remove('hidden');
                 wrapperHarga.classList.add('hidden');
+
+                lblPromo.innerText = "🔥 Harga Promo Sewa/Jam (Opsional)";
                 
                 inputRental.required = true;
                 inputHarga.required = false;
@@ -225,7 +242,6 @@
             }
         }
 
-        // Preview universal untuk foto dan video
         function handlePreviewMedia(input) {
             const container = document.getElementById('preview-foto-container');
             container.innerHTML = '';
@@ -341,12 +357,33 @@
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-slate-900/60 hover:bg-slate-900/40 text-xs text-white";
 
+                    // FORMAT HARGA PROMO JUAL DAN RENTAL
+                    let htmlHargaJual = `Rp ${parseInt(p.harga || 0).toLocaleString('id-ID')}`;
+                    if (p.harga_promo && p.harga_promo > 0) {
+                        htmlHargaJual = `
+                            <div>
+                                <span class="line-through text-slate-500 text-[10px]">Rp ${parseInt(p.harga || 0).toLocaleString('id-ID')}</span>
+                                <span class="text-rose-400 font-extrabold ml-1">Rp ${parseInt(p.harga_promo).toLocaleString('id-ID')}</span>
+                                <span class="text-[8px] bg-rose-500/20 text-rose-300 px-1 py-0.5 rounded font-bold ml-1">PROMO</span>
+                            </div>`;
+                    }
+
+                    let htmlHargaRental = `Rp ${parseInt(p.harga_rental || 0).toLocaleString('id-ID')} /Jam`;
+                    if (p.harga_promo && p.harga_promo > 0) {
+                        htmlHargaRental = `
+                            <div>
+                                <span class="line-through text-slate-500 text-[10px]">Rp ${parseInt(p.harga_rental || 0).toLocaleString('id-ID')}</span>
+                                <span class="text-rose-400 font-extrabold ml-1">Rp ${parseInt(p.harga_promo).toLocaleString('id-ID')} /Jam</span>
+                                <span class="text-[8px] bg-rose-500/20 text-rose-300 px-1 py-0.5 rounded font-bold ml-1">PROMO</span>
+                            </div>`;
+                    }
+
                     if (!isRental) {
                         adaJual = true;
                         tr.innerHTML = `
                             <td class="p-3 font-bold">${p.nama}</td>
                             <td class="p-3 text-indigo-400 font-bold">${p.game}</td>
-                            <td class="p-3 text-cyan-400 font-bold">Rp ${parseInt(p.harga).toLocaleString('id-ID')}</td>
+                            <td class="p-3 font-bold">${htmlHargaJual}</td>
                             <td class="p-3">${p.login || '-'}</td>
                             <td class="p-3 flex gap-1">
                                 <button onclick="pemicuEditAkun('${p.id}')" class="bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded hover:bg-amber-400">Edit</button>
@@ -358,7 +395,7 @@
                         tr.innerHTML = `
                             <td class="p-3 font-bold">${p.nama}</td>
                             <td class="p-3 text-indigo-400 font-bold">${p.game}</td>
-                            <td class="p-3 text-amber-400 font-bold">Rp ${parseInt(p.harga_rental).toLocaleString('id-ID')} /Jam</td>
+                            <td class="p-3 font-bold">${htmlHargaRental}</td>
                             <td class="p-3">${p.login || '-'}</td>
                             <td class="p-3 flex gap-1">
                                 <button onclick="pemicuEditAkun('${p.id}')" class="bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded hover:bg-amber-400">Edit</button>
@@ -381,6 +418,7 @@
             document.getElementById('p-id').value = produk.id;
             document.getElementById('p-nama').value = produk.nama;
             document.getElementById('p-game').value = produk.game;
+            document.getElementById('p-harga-promo').value = produk.harga_promo || '';
             
             const isRental = (produk.harga_rental !== null && produk.harga_rental > 0);
             if(isRental) {
@@ -430,6 +468,7 @@
         function resetFormKeTambah() {
             document.getElementById('product-form').reset();
             document.getElementById('p-id').value = "";
+            document.getElementById('p-harga-promo').value = "";
             fotoLamaSaves = "";
             document.getElementById('preview-foto-container').innerHTML = '';
             document.getElementById('form-title').innerText = "Tambah Akun Game Baru";
@@ -441,11 +480,13 @@
 
         function ambilDataDariForm() {
             const hrgRental = document.getElementById('p-harga-rental').value;
+            const hrgPromo = document.getElementById('p-harga-promo').value;
             return {
                 nama: document.getElementById('p-nama').value,
                 game: document.getElementById('p-game').value,
                 harga: parseInt(document.getElementById('p-harga').value || 0),
                 harga_rental: hrgRental ? parseInt(hrgRental) : null,
+                harga_promo: hrgPromo ? parseInt(hrgPromo) : null,
                 nick: document.getElementById('p-nick').value,
                 skin: document.getElementById('p-skin').value,
                 login: document.getElementById('p-login').value,
